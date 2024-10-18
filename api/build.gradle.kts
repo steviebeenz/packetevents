@@ -38,6 +38,7 @@ dependencies {
     testImplementation(testlibs.mockbukkit)
     testImplementation(testlibs.slf4j)
     testImplementation(testlibs.bundles.junit)
+    testImplementation(libs.netty)
 }
 
 mappingCompression {
