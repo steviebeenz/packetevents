@@ -284,6 +284,8 @@ public class WrappedBlockState {
             return 11;
         } else if (version.isOlderThan(ClientVersion.V_1_20_5)) {
             return 12;
+        } else if (version.isOlderThan(ClientVersion.V_1_21_2)) {
+            return 13;
         } else {
             // TODO add on update
             return 127;
