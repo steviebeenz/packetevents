@@ -101,7 +101,7 @@ public class StaticComponentMap implements IComponentMap {
 
     @Override
     public String toString() {
-        return "StaticComponentMap{empty=" + this.empty + ", delegate=" + this.delegate + '}';
+        return "Components" + this.delegate;
     }
 
     public static class Builder {

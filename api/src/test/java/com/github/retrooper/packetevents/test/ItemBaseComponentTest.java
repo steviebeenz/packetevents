@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ItemBaseComponentTest extends BaseDummyAPITest {
@@ -49,9 +50,9 @@ public class ItemBaseComponentTest extends BaseDummyAPITest {
         assertEquals(1, oakBoatComponents.get(ComponentTypes.MAX_STACK_SIZE));
 
         StaticComponentMap airComponents1205 = ItemTypes.AIR.getComponents(ClientVersion.V_1_20_5);
-        assertNull(airComponents1205.get(ComponentTypes.ITEM_NAME));
-
         StaticComponentMap airComponents1212 = ItemTypes.AIR.getComponents(ClientVersion.V_1_21_2);
+        assertNotEquals(airComponents1212, airComponents1205);
+        assertNull(airComponents1205.get(ComponentTypes.ITEM_NAME));
         assertEquals(Component.translatable("block.minecraft.air"),
                 airComponents1212.get(ComponentTypes.ITEM_NAME));
     }

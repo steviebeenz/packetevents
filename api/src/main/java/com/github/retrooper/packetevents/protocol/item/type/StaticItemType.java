@@ -101,6 +101,12 @@ public class StaticItemType extends AbstractMappedEntity implements ItemType {
         this.components.put(version, components);
     }
 
+    // internal, only used for checking wether
+    // component definition is present during startup
+    boolean hasComponents(ClientVersion version) {
+        return this.components.containsKey(version);
+    }
+
     // fills holes in the base component mappings
     void fillComponents() {
         StaticComponentMap lastComponents = null;

@@ -1495,7 +1495,7 @@ public class ItemTypes {
     @SuppressWarnings("unchecked")
     private static StaticComponentMap.Builder parseComponents(
             ClientVersion version,
-            @Nullable StaticComponentMap.Builder base,
+            @Nullable StaticComponentMap base,
             SequentialNBTReader.Compound nbt
     ) {
         StaticComponentMap.Builder components = StaticComponentMap.builder();
@@ -1526,8 +1526,8 @@ public class ItemTypes {
             for (Map.Entry<String, NBT> entry : compound) {
                 ClientVersion version = ClientVersion.valueOf(entry.getKey());
                 SequentialNBTReader.Compound items = (SequentialNBTReader.Compound) entry.getValue();
-                StaticComponentMap.Builder defaults = parseComponents(
-                        version, null, (SequentialNBTReader.Compound) items.next().getValue());
+                StaticComponentMap defaults = parseComponents(
+                        version, null, (SequentialNBTReader.Compound) items.next().getValue()).build();
 
                 for (Map.Entry<String, NBT> item : items) {
                     ItemType itemType = REGISTRY.getByName(new ResourceLocation(item.getKey()));
@@ -1538,6 +1538,11 @@ public class ItemTypes {
                     StaticComponentMap.Builder components = parseComponents(version, defaults,
                             (SequentialNBTReader.Compound) item.getValue());
                     ((StaticItemType) itemType).setComponents(version, components.build());
+                }
+                for (ItemType type : REGISTRY.getEntries()) {
+                    if (type instanceof StaticItemType && !((StaticItemType) type).hasComponents(version)) {
+                        ((StaticItemType) type).setComponents(version, defaults);
+                    }
                 }
             }
         } catch (IOException exception) {
