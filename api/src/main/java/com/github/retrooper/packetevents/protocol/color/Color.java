@@ -18,15 +18,21 @@
 
 package com.github.retrooper.packetevents.protocol.color;
 
+import com.github.retrooper.packetevents.protocol.nbt.NBT;
+import com.github.retrooper.packetevents.protocol.nbt.NBTInt;
+import com.github.retrooper.packetevents.protocol.nbt.NBTList;
+import com.github.retrooper.packetevents.protocol.nbt.NBTNumber;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.util.MathUtil;
 import net.kyori.adventure.util.RGBLike;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-public final class Color implements RGBLike {
+public class Color implements RGBLike {
 
-    private static final int BIT_MASK = 0xFF;
+    protected static final int BIT_MASK = 0xFF;
 
-    private final int red, green, blue;
+    protected final int red, green, blue;
 
     public Color(@Range(from = 0L, to = 255L) int red, @Range(from = 0L, to = 255L) int green, @Range(from = 0L, to = 255L) int blue) {
         this.red = red;
@@ -36,6 +42,21 @@ public final class Color implements RGBLike {
 
     public Color(int rgb) {
         this((rgb >> 16) & BIT_MASK, (rgb >> 8) & BIT_MASK, rgb & BIT_MASK);
+    }
+
+    public static Color decode(NBT nbt, ClientVersion version) {
+        if (nbt instanceof NBTNumber) {
+            return new Color(((NBTNumber) nbt).getAsInt());
+        }
+        NBTList<?> list = (NBTList<?>) nbt;
+        int red = MathUtil.floor(((NBTNumber) list.getTag(0)).getAsFloat() * 255f);
+        int green = MathUtil.floor(((NBTNumber) list.getTag(1)).getAsFloat() * 255f);
+        int blue = MathUtil.floor(((NBTNumber) list.getTag(2)).getAsFloat() * 255f);
+        return new Color(red, green, blue);
+    }
+
+    public static NBT encode(Color color, ClientVersion version) {
+        return new NBTInt(color.asRGB());
     }
 
     public @NotNull Color withRed(@Range(from = 0L, to = 255L) int red) {
@@ -51,9 +72,7 @@ public final class Color implements RGBLike {
     }
 
     public int asRGB() {
-        int rgb = red;
-        rgb = (rgb << 8) + green;
-        return (rgb << 8) + blue;
+        return (this.red << 16) | (this.green << 8) | this.blue;
     }
 
     @Override
