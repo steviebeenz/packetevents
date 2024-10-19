@@ -1405,6 +1405,50 @@ public class ItemTypes {
     public static final ItemType MUSIC_DISC_CREATOR_MUSIC_BOX = builder("music_disc_creator_music_box").setMaxAmount(1).setAttributes(ItemAttribute.MUSIC_DISC).build();
     public static final ItemType MUSIC_DISC_PRECIPICE = builder("music_disc_precipice").setMaxAmount(1).setAttributes(ItemAttribute.MUSIC_DISC).build();
 
+    // 1.21.2 items
+    public static final ItemType PALE_OAK_PLANKS = builder("pale_oak_planks").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_PLANKS).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_SAPLING = builder("pale_oak_sapling").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_SAPLING).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_LOG = builder("pale_oak_log").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_LOG).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType STRIPPED_PALE_OAK_LOG = builder("stripped_pale_oak_log").setMaxAmount(64).setPlacedType(StateTypes.STRIPPED_PALE_OAK_LOG).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType STRIPPED_PALE_OAK_WOOD = builder("stripped_pale_oak_wood").setMaxAmount(64).setPlacedType(StateTypes.STRIPPED_PALE_OAK_WOOD).setAttributes(ItemAttribute.WOOD_TIER, ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_WOOD = builder("pale_oak_wood").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_WOOD).setAttributes(ItemAttribute.WOOD_TIER, ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_LEAVES = builder("pale_oak_leaves").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_LEAVES).build();
+    public static final ItemType PALE_MOSS_CARPET = builder("pale_moss_carpet").setMaxAmount(64).setPlacedType(StateTypes.PALE_MOSS_CARPET).build();
+    public static final ItemType PALE_HANGING_MOSS = builder("pale_hanging_moss").setMaxAmount(64).setPlacedType(StateTypes.PALE_HANGING_MOSS).build();
+    public static final ItemType PALE_MOSS_BLOCK = builder("pale_moss_block").setMaxAmount(64).setPlacedType(StateTypes.PALE_MOSS_BLOCK).build();
+    public static final ItemType PALE_OAK_SLAB = builder("pale_oak_slab").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_SLAB).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType CREAKING_HEART = builder("creaking_heart").setMaxAmount(64).setPlacedType(StateTypes.CREAKING_HEART).build();
+    public static final ItemType PALE_OAK_FENCE = builder("pale_oak_fence").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_FENCE).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_STAIRS = builder("pale_oak_stairs").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_STAIRS).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_BUTTON = builder("pale_oak_button").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_BUTTON).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_PRESSURE_PLATE = builder("pale_oak_pressure_plate").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_PRESSURE_PLATE).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_DOOR = builder("pale_oak_door").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_DOOR).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_TRAPDOOR = builder("pale_oak_trapdoor").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_TRAPDOOR).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_FENCE_GATE = builder("pale_oak_fence_gate").setMaxAmount(64).setPlacedType(StateTypes.PALE_OAK_FENCE_GATE).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_BOAT = builder("pale_oak_boat").setMaxAmount(1).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_CHEST_BOAT = builder("pale_oak_chest_boat").setMaxAmount(1).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_SIGN = builder("pale_oak_sign").setMaxAmount(16).setPlacedType(StateTypes.PALE_OAK_SIGN).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType PALE_OAK_HANGING_SIGN = builder("pale_oak_hanging_sign").setMaxAmount(16).setPlacedType(StateTypes.PALE_OAK_HANGING_SIGN).setAttributes(ItemAttribute.FUEL).build();
+    public static final ItemType WHITE_BUNDLE = builder("white_bundle").setMaxAmount(1).build();
+    public static final ItemType ORANGE_BUNDLE = builder("orange_bundle").setMaxAmount(1).build();
+    public static final ItemType MAGENTA_BUNDLE = builder("magenta_bundle").setMaxAmount(1).build();
+    public static final ItemType LIGHT_BLUE_BUNDLE = builder("light_blue_bundle").setMaxAmount(1).build();
+    public static final ItemType YELLOW_BUNDLE = builder("yellow_bundle").setMaxAmount(1).build();
+    public static final ItemType LIME_BUNDLE = builder("lime_bundle").setMaxAmount(1).build();
+    public static final ItemType PINK_BUNDLE = builder("pink_bundle").setMaxAmount(1).build();
+    public static final ItemType GRAY_BUNDLE = builder("gray_bundle").setMaxAmount(1).build();
+    public static final ItemType LIGHT_GRAY_BUNDLE = builder("light_gray_bundle").setMaxAmount(1).build();
+    public static final ItemType CYAN_BUNDLE = builder("cyan_bundle").setMaxAmount(1).build();
+    public static final ItemType PURPLE_BUNDLE = builder("purple_bundle").setMaxAmount(1).build();
+    public static final ItemType BLUE_BUNDLE = builder("blue_bundle").setMaxAmount(1).build();
+    public static final ItemType BROWN_BUNDLE = builder("brown_bundle").setMaxAmount(1).build();
+    public static final ItemType GREEN_BUNDLE = builder("green_bundle").setMaxAmount(1).build();
+    public static final ItemType RED_BUNDLE = builder("red_bundle").setMaxAmount(1).build();
+    public static final ItemType BLACK_BUNDLE = builder("black_bundle").setMaxAmount(1).build();
+    public static final ItemType CREAKING_SPAWN_EGG = builder("creaking_spawn_egg").setMaxAmount(64).build();
+    public static final ItemType FIELD_MASONED_BANNER_PATTERN = builder("field_masoned_banner_pattern").setMaxAmount(1).build();
+    public static final ItemType BORDURE_INDENTED_BANNER_PATTERN = builder("bordure_indented_banner_pattern").setMaxAmount(1).build();
+
     /**
      * @deprecated Burning furnace shows up as a missing texture, removed in 1.9
      */
