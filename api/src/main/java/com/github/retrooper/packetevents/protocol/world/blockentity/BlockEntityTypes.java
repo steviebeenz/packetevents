@@ -125,8 +125,12 @@ public class BlockEntityTypes {
     public static final BlockEntityType TRIAL_SPAWNER = define("trial_spawner");
     public static final BlockEntityType VAULT = define("vault");
 
+    // added with 1.21.2
+    public static final BlockEntityType CREAKING_HEART = define("creaking_heart");
+
     /**
      * Returns an immutable view of the block entity types.
+     *
      * @return Block Entity Types
      */
     public static Collection<BlockEntityType> values() {
