@@ -19,9 +19,11 @@
 package com.github.retrooper.packetevents.protocol.color;
 
 import com.github.retrooper.packetevents.protocol.nbt.NBT;
+import com.github.retrooper.packetevents.protocol.nbt.NBTFloat;
 import com.github.retrooper.packetevents.protocol.nbt.NBTInt;
 import com.github.retrooper.packetevents.protocol.nbt.NBTList;
 import com.github.retrooper.packetevents.protocol.nbt.NBTNumber;
+import com.github.retrooper.packetevents.protocol.nbt.NBTType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.util.MathUtil;
 import net.kyori.adventure.util.RGBLike;
@@ -40,6 +42,16 @@ public class Color implements RGBLike {
         this.blue = blue;
     }
 
+    public Color(
+            @Range(from = 0L, to = 1L) float red,
+            @Range(from = 0L, to = 1L) float green,
+            @Range(from = 0L, to = 1L) float blue
+    ) {
+        this(MathUtil.floor(red * 255f),
+                MathUtil.floor(green * 255f),
+                MathUtil.floor(blue * 255f));
+    }
+
     public Color(int rgb) {
         this((rgb >> 16) & BIT_MASK, (rgb >> 8) & BIT_MASK, rgb & BIT_MASK);
     }
@@ -49,14 +61,21 @@ public class Color implements RGBLike {
             return new Color(((NBTNumber) nbt).getAsInt());
         }
         NBTList<?> list = (NBTList<?>) nbt;
-        int red = MathUtil.floor(((NBTNumber) list.getTag(0)).getAsFloat() * 255f);
-        int green = MathUtil.floor(((NBTNumber) list.getTag(1)).getAsFloat() * 255f);
-        int blue = MathUtil.floor(((NBTNumber) list.getTag(2)).getAsFloat() * 255f);
+        float red = ((NBTNumber) list.getTag(0)).getAsFloat();
+        float green = ((NBTNumber) list.getTag(1)).getAsFloat();
+        float blue = ((NBTNumber) list.getTag(2)).getAsFloat();
         return new Color(red, green, blue);
     }
 
     public static NBT encode(Color color, ClientVersion version) {
-        return new NBTInt(color.asRGB());
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_21_2)) {
+            return new NBTInt(color.asRGB());
+        }
+        NBTList<NBTFloat> list = new NBTList<>(NBTType.FLOAT, 3);
+        list.addTag(new NBTFloat(color.red));
+        list.addTag(new NBTFloat(color.green));
+        list.addTag(new NBTFloat(color.blue));
+        return list;
     }
 
     public @NotNull Color withRed(@Range(from = 0L, to = 255L) int red) {

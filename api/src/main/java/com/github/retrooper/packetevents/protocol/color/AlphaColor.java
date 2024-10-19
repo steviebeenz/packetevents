@@ -19,14 +19,18 @@
 package com.github.retrooper.packetevents.protocol.color;
 
 import com.github.retrooper.packetevents.protocol.nbt.NBT;
+import com.github.retrooper.packetevents.protocol.nbt.NBTFloat;
 import com.github.retrooper.packetevents.protocol.nbt.NBTInt;
 import com.github.retrooper.packetevents.protocol.nbt.NBTList;
 import com.github.retrooper.packetevents.protocol.nbt.NBTNumber;
+import com.github.retrooper.packetevents.protocol.nbt.NBTType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.util.MathUtil;
 import org.jetbrains.annotations.Range;
 
 public final class AlphaColor extends Color {
+
+    public static final AlphaColor WHITE = new AlphaColor(0xFFFFFFFF);
 
     private final int alpha;
 
@@ -48,6 +52,24 @@ public final class AlphaColor extends Color {
         this.alpha = alpha;
     }
 
+    public AlphaColor(
+            @Range(from = 0L, to = 1L) float red,
+            @Range(from = 0L, to = 1L) float green,
+            @Range(from = 0L, to = 1L) float blue
+    ) {
+        this(1f, red, green, blue);
+    }
+
+    public AlphaColor(
+            @Range(from = 0L, to = 1L) float alpha,
+            @Range(from = 0L, to = 1L) float red,
+            @Range(from = 0L, to = 1L) float green,
+            @Range(from = 0L, to = 1L) float blue
+    ) {
+        super(red, green, blue);
+        this.alpha = MathUtil.floor(alpha * 255f);
+    }
+
     public AlphaColor(int rgb) {
         this((rgb >> 24) & BIT_MASK,
                 (rgb >> 16) & BIT_MASK,
@@ -60,15 +82,23 @@ public final class AlphaColor extends Color {
             return new AlphaColor(((NBTNumber) nbt).getAsInt());
         }
         NBTList<?> list = (NBTList<?>) nbt;
-        int red = MathUtil.floor(((NBTNumber) list.getTag(0)).getAsFloat() * 255f);
-        int green = MathUtil.floor(((NBTNumber) list.getTag(1)).getAsFloat() * 255f);
-        int blue = MathUtil.floor(((NBTNumber) list.getTag(2)).getAsFloat() * 255f);
-        int alpha = MathUtil.floor(((NBTNumber) list.getTag(3)).getAsFloat() * 255f);
+        float red = ((NBTNumber) list.getTag(0)).getAsFloat();
+        float green = ((NBTNumber) list.getTag(1)).getAsFloat();
+        float blue = ((NBTNumber) list.getTag(2)).getAsFloat();
+        float alpha = ((NBTNumber) list.getTag(3)).getAsFloat();
         return new AlphaColor(alpha, red, green, blue);
     }
 
     public static NBT encode(AlphaColor color, ClientVersion version) {
-        return new NBTInt(color.asRGB());
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_21_2)) {
+            return new NBTInt(color.asRGB());
+        }
+        NBTList<NBTFloat> list = new NBTList<>(NBTType.FLOAT, 4);
+        list.addTag(new NBTFloat(color.red));
+        list.addTag(new NBTFloat(color.green));
+        list.addTag(new NBTFloat(color.blue));
+        list.addTag(new NBTFloat(color.alpha));
+        return list;
     }
 
     public AlphaColor withAlpha(@Range(from = 0L, to = 255L) int alpha) {
