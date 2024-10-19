@@ -18,6 +18,7 @@
 
 package com.github.retrooper.packetevents.protocol.world.states.defaulttags;
 
+import com.github.retrooper.packetevents.protocol.component.ComponentTypes;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateType;
@@ -99,6 +100,10 @@ public class ItemTags {
     public static final ItemTags CHEST_BOATS = bind("chest_boats");
     public static final ItemTags FISHES = bind("fishes");
     public static final ItemTags SIGNS = bind("signs");
+    /**
+     * @deprecated This tag has been removed in 1.21.2 because of components
+     */
+    @Deprecated
     public static final ItemTags MUSIC_DISCS = bind("music_discs");
     public static final ItemTags CREEPER_DROP_MUSIC_DISCS = bind("creeper_drop_music_discs");
     public static final ItemTags COALS = bind("coals");
@@ -384,6 +389,13 @@ public class ItemTags {
         ItemTags.ENCHANTABLE_WEAPON.addTag(ItemTags.ENCHANTABLE_SHARP_WEAPON).add(ItemTypes.MACE);
         ItemTags.ENCHANTABLE_VANISHING.addTag(ItemTags.ENCHANTABLE_DURABILITY).addTag(ItemTags.SKULLS).add(ItemTypes.COMPASS, ItemTypes.CARVED_PUMPKIN);
         copy(BlockTags.COMPLETES_FIND_TREE_TUTORIAL, ItemTags.COMPLETES_FIND_TREE_TUTORIAL);
+
+        // deprecated tags
+        for (ItemType type : ItemTypes.getRegistry().getEntries()) {
+            if (type.getComponents().has(ComponentTypes.JUKEBOX_PLAYABLE)) {
+                ItemTags.MUSIC_DISCS.add(type);
+            }
+        }
     }
 
     String name;
