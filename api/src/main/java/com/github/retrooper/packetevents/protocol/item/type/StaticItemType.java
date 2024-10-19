@@ -83,6 +83,10 @@ public class StaticItemType extends AbstractMappedEntity implements ItemType {
 
     @Override
     public StaticComponentMap getComponents(ClientVersion version) {
+        if (!version.isRelease()) {
+            throw new IllegalArgumentException("Unsupported version for "
+                    + "getting components of " + this.getName() + ": " + version);
+        }
         return this.components.getOrDefault(version, StaticComponentMap.SHARED_ITEM_COMPONENTS);
     }
 
@@ -90,6 +94,9 @@ public class StaticItemType extends AbstractMappedEntity implements ItemType {
         if (this.components.containsKey(version)) {
             throw new IllegalStateException("Components are already defined for "
                     + this.getName() + " in version " + version);
+        } else if (!version.isRelease()) {
+            throw new IllegalArgumentException("Unsupported version for "
+                    + "setting components of " + this.getName() + ": " + version);
         }
         this.components.put(version, components);
     }
@@ -98,14 +105,26 @@ public class StaticItemType extends AbstractMappedEntity implements ItemType {
     void fillComponents() {
         StaticComponentMap lastComponents = null;
         for (ClientVersion version : ClientVersion.values()) {
-            StaticComponentMap components = this.components.get(version);
-            if (components != null) {
-                lastComponents = components;
+            if (!version.isRelease()) {
                 continue;
             }
-            if (lastComponents != null) {
-                this.components.put(version, lastComponents);
+            StaticComponentMap components = this.components.get(version);
+            if (components == null) {
+                if (lastComponents != null) {
+                    this.components.put(version, lastComponents);
+                }
+                continue;
             }
+            if (lastComponents == null) {
+                // also fill backwards
+                for (ClientVersion beforeVersion : ClientVersion.values()) {
+                    if (beforeVersion == version) {
+                        break;
+                    }
+                    this.components.put(beforeVersion, components);
+                }
+            }
+            lastComponents = components;
         }
     }
 }
