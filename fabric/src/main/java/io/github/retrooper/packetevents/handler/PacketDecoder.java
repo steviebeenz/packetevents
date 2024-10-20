@@ -46,16 +46,10 @@ public class PacketDecoder extends MessageToMessageDecoder<ByteBuf> {
         if (!msg.isReadable()) {
             return;
         }
-        ByteBuf buf = (ByteBuf) PacketEventsImplHelper.handlePacket(ctx.channel(), this.user, this.player,
+        PacketEventsImplHelper.handlePacket(ctx.channel(), this.user, this.player,
                 msg, false, this.side);
-        try {
-            if (buf.isReadable()) {
-                out.add(buf.retain());
-            }
-        } finally {
-            if (buf != msg) {
-                buf.release();
-            }
+        if (msg.isReadable()) {
+            out.add(msg.retain());
         }
     }
 }

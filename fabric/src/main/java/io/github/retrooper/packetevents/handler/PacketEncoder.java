@@ -51,15 +51,10 @@ public class PacketEncoder extends ChannelOutboundHandlerAdapter {
             return;
         }
 
-        ByteBuf out;
-        try {
-            out = (ByteBuf) PacketEventsImplHelper.handlePacket(ctx.channel(),
-                    this.user, this.player, in, false, this.side);
-        } finally {
-            in.release();
-        }
-        if (out.isReadable()) {
-            ctx.write(out.retain(), promise);
+        PacketEventsImplHelper.handlePacket(ctx.channel(),
+                this.user, this.player, in, false, this.side);
+        if (in.isReadable()) {
+            ctx.write(in, promise);
         }
     }
 }
