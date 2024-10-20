@@ -24,6 +24,7 @@ package com.github.retrooper.packetevents.protocol.teleport;
  */
 public final class RelativeFlag {
 
+    public static final RelativeFlag NONE = new RelativeFlag(0);
     public static final RelativeFlag X = new RelativeFlag(1 << 0);
     public static final RelativeFlag Y = new RelativeFlag(1 << 1);
     public static final RelativeFlag Z = new RelativeFlag(1 << 2);
