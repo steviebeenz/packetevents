@@ -18,6 +18,7 @@
 
 package io.github.retrooper.packetevents.handler;
 
+import com.github.retrooper.packetevents.protocol.PacketSide;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.util.PacketEventsImplHelper;
 import io.netty.buffer.ByteBuf;
@@ -30,10 +31,12 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class PacketEncoder extends ChannelOutboundHandlerAdapter {
 
+    private final PacketSide side;
     public User user;
     public Player player;
 
-    public PacketEncoder(User user) {
+    public PacketEncoder(PacketSide side, User user) {
+        this.side = side.getOpposite();
         this.user = user;
     }
 
@@ -50,8 +53,8 @@ public class PacketEncoder extends ChannelOutboundHandlerAdapter {
 
         ByteBuf out;
         try {
-            out = (ByteBuf) PacketEventsImplHelper.handleServerBoundPacket(ctx.channel(),
-                    this.user, this.player, in, false);
+            out = (ByteBuf) PacketEventsImplHelper.handlePacket(ctx.channel(),
+                    this.user, this.player, in, false, this.side);
         } finally {
             in.release();
         }

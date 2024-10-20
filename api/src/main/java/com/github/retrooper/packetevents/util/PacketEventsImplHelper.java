@@ -25,18 +25,30 @@ import com.github.retrooper.packetevents.event.UserDisconnectEvent;
 import com.github.retrooper.packetevents.manager.protocol.ProtocolManager;
 import com.github.retrooper.packetevents.netty.buffer.ByteBufHelper;
 import com.github.retrooper.packetevents.netty.buffer.UnpooledByteBufAllocationHelper;
+import com.github.retrooper.packetevents.protocol.PacketSide;
 import com.github.retrooper.packetevents.protocol.player.User;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class PacketEventsImplHelper {
-    
-    public static PacketSendEvent handleClientBoundPacket(Object channel, 
-                                                              User user, 
-                                                              Object player, 
-                                                              Object buffer, 
-                                                             boolean autoProtocolTranslation) throws Exception {
+
+    public static Object handlePacket(
+            Object channel, User user, Object player, Object buffer,
+            boolean autoProtocolTranslation, PacketSide side
+    ) throws Exception {
+        if (side == PacketSide.SERVER) {
+            handleClientBoundPacket(channel, user, player, buffer, autoProtocolTranslation);
+            return buffer;
+        } else {
+            return handleServerBoundPacket(channel, user, player, buffer, autoProtocolTranslation);
+        }
+    }
+
+    public static PacketSendEvent handleClientBoundPacket(
+            Object channel, User user, Object player, Object buffer,
+            boolean autoProtocolTranslation
+    ) throws Exception {
         if (!ByteBufHelper.isReadable(buffer)) return null;
 
         int preProcessIndex = ByteBufHelper.readerIndex(buffer);
@@ -72,9 +84,9 @@ public class PacketEventsImplHelper {
     }
 
     public static Object handleServerBoundPacket(Object channel, User user,
-                                                             Object player,
-                                                             Object buffer,
-                                                             boolean autoProtocolTranslation) throws Exception {
+                                                 Object player,
+                                                 Object buffer,
+                                                 boolean autoProtocolTranslation) throws Exception {
         if (!ByteBufHelper.isReadable(buffer)) return null;
 
         int preProcessIndex = ByteBufHelper.readerIndex(buffer);
