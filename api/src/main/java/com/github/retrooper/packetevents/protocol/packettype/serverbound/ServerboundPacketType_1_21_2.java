@@ -60,7 +60,7 @@ public enum ServerboundPacketType_1_21_2 {
     PLAYER_ABILITIES,
     PLAYER_DIGGING,
     ENTITY_ACTION,
-    STEER_VEHICLE,
+    PLAYER_INPUT, // based on STEER_VEHICLE
     PONG,
     SET_RECIPE_BOOK_STATE,
     SET_DISPLAYED_RECIPE,

@@ -673,6 +673,7 @@ public final class PacketType {
             // added in 1.21.2
             CLIENT_TICK_END,
             SELECT_BUNDLE_ITEM,
+            PLAYER_INPUT, // based on STEER_VEHICLE
             ;
 
             private static int INDEX = 0;
