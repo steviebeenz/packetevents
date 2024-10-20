@@ -50,3 +50,13 @@ tasks {
         }
     }
 }
+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        register("packetevents") {
+            sourceSet(sourceSets.main.get())
+            sourceSet(sourceSets.maybeCreate("client"))
+        }
+    }
+}
