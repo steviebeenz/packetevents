@@ -19,7 +19,7 @@
 package io.github.retrooper.packetevents;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
+import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 
@@ -27,7 +27,7 @@ public class PacketEventsServerMod implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        PacketEvents.setAPI(FabricPacketEventsBuilder.build(
+        PacketEvents.setAPI(new FabricPacketEventsAPI(
                 "packetevents", EnvType.SERVER));
         PacketEvents.getAPI().load();
         PacketEvents.getAPI().init();

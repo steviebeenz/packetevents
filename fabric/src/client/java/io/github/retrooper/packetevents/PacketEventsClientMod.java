@@ -19,16 +19,26 @@
 package io.github.retrooper.packetevents;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsBuilder;
+import io.github.retrooper.packetevents.factory.fabric.FabricClientPlayerManager;
+import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
+import io.github.retrooper.packetevents.impl.netty.manager.player.PlayerManagerAbstract;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 
 public class PacketEventsClientMod implements ClientModInitializer {
 
+    private FabricPacketEventsAPI constructApi() {
+        return new FabricPacketEventsAPI("packetevents", EnvType.CLIENT) {
+            @Override
+            protected PlayerManagerAbstract constructPlayerManager() {
+                return new FabricClientPlayerManager();
+            }
+        };
+    }
+
     @Override
     public void onInitializeClient() {
-        PacketEvents.setAPI(FabricPacketEventsBuilder.build(
-                "packetevents", EnvType.CLIENT));
+        PacketEvents.setAPI(this.constructApi());
         PacketEvents.getAPI().load();
         PacketEvents.getAPI().init();
     }
