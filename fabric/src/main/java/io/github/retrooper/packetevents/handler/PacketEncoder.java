@@ -36,7 +36,7 @@ public class PacketEncoder extends ChannelOutboundHandlerAdapter {
     public Player player;
 
     public PacketEncoder(PacketSide side, User user) {
-        this.side = side.getOpposite();
+        this.side = side;
         this.user = user;
     }
 
