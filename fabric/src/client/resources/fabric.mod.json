@@ -4,17 +4,19 @@
   "version": "${version}",
   "name": "PacketEvents",
   "description": "",
-  "authors": ["retrooper"],
+  "authors": [
+    "retrooper"
+  ],
   "contact": {},
   "license": "GPL-3.0",
   "icon": "assets/packetevents/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "io.github.retrooper.packetevents.PacketEventsMod"
+    "client": [
+      "io.github.retrooper.packetevents.PacketEventsClientMod"
     ],
-    "preLaunch": [
-      "io.github.retrooper.packetevents.PacketEventsMod"
+    "server": [
+      "io.github.retrooper.packetevents.PacketEventsServerMod"
     ]
   },
   "mixins": [

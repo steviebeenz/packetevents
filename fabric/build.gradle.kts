@@ -59,4 +59,6 @@ loom {
             sourceSet(sourceSets.maybeCreate("client"))
         }
     }
+    accessWidenerPath = sourceSets.main.get().resources.srcDirs.single()
+        .resolve("${rootProject.name}.accesswidener")
 }
