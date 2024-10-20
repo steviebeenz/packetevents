@@ -59,9 +59,7 @@ public class PacketEncoder extends ChannelOutboundHandlerAdapter {
             in.release();
         }
         if (out.isReadable()) {
-            ctx.write(out, promise);
-        } else {
-            out.release();
+            ctx.write(out.retain(), promise);
         }
     }
 }
