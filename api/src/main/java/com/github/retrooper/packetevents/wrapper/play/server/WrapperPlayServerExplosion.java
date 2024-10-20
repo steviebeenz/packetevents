@@ -111,8 +111,8 @@ public class WrapperPlayServerExplosion extends PacketWrapper<WrapperPlayServerE
 
     @Override
     public void read() {
-        if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19_3)) {
-            position = new Vector3d(readDouble(), readDouble(), readDouble());
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19_3)) {
+            this.position = Vector3d.read(this);
         } else {
             position = new Vector3d(readFloat(), readFloat(), readFloat());
         }
@@ -158,10 +158,8 @@ public class WrapperPlayServerExplosion extends PacketWrapper<WrapperPlayServerE
 
     @Override
     public void write() {
-        if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19_3)) {
-            writeDouble(position.getX());
-            writeDouble(position.getY());
-            writeDouble(position.getZ());
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19_3)) {
+            Vector3d.write(this, this.position);
         } else {
             writeFloat((float) position.getX());
             writeFloat((float) position.getY());
