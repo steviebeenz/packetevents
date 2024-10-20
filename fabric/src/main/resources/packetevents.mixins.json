@@ -4,7 +4,7 @@
   "package": "io.github.retrooper.packetevents.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PacketEventsInjectorMixin"
+    "ConnectionMixin"
   ],
   "client": [
   ],

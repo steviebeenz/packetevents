@@ -31,21 +31,33 @@ import io.github.retrooper.packetevents.handler.PacketEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelPipeline;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.BandwidthDebugMonitor;
 import net.minecraft.network.protocol.PacketFlow;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(net.minecraft.network.Connection.class)
-public class PacketEventsInjectorMixin {
+public class ConnectionMixin {
+
+    // doesn't account for mods like ViaFabric
+    @Unique
+    private static final ClientVersion CLIENT_VERSION =
+            ClientVersion.getById(SharedConstants.getProtocolVersion());
+
     @Inject(method = "configureSerialization", at = @At("TAIL"))
-    private static void configureSerialization(ChannelPipeline pipeline, PacketFlow flow, boolean memoryOnly, BandwidthDebugMonitor bandwithDebugMonitor, CallbackInfo ci) throws Exception {
+    private static void configureSerialization(
+            ChannelPipeline pipeline, PacketFlow flow, boolean memoryOnly,
+            BandwidthDebugMonitor bandwithDebugMonitor, CallbackInfo ci
+    ) {
         PacketEvents.getAPI().getLogManager().debug("Game connected!");
+
         Channel channel = pipeline.channel();
-        User user = new User(channel, ConnectionState.HANDSHAKING, ClientVersion.getLatest(),
-                new UserProfile(null, null));
+        User user = new User(channel, ConnectionState.HANDSHAKING,
+                CLIENT_VERSION, new UserProfile(null, null));
         ProtocolManager.USERS.put(channel, user);
 
         UserConnectEvent connectEvent = new UserConnectEvent(user);
@@ -54,10 +66,10 @@ public class PacketEventsInjectorMixin {
             channel.unsafe().closeForcibly();
             return;
         }
-        PacketDecoder decoder = new PacketDecoder(user);
-        PacketEncoder encoder = new PacketEncoder(user);
-        channel.pipeline().addAfter("splitter", PacketEvents.DECODER_NAME, decoder);
-        channel.pipeline().addAfter("prepender", PacketEvents.ENCODER_NAME, encoder);
-        channel.closeFuture().addListener((ChannelFutureListener) future -> PacketEventsImplHelper.handleDisconnection(user.getChannel(), user.getUUID()));
+
+        channel.pipeline().addAfter("splitter", PacketEvents.DECODER_NAME, new PacketDecoder(user));
+        channel.pipeline().addAfter("prepender", PacketEvents.ENCODER_NAME, new PacketEncoder(user));
+        channel.closeFuture().addListener((ChannelFutureListener) future ->
+                PacketEventsImplHelper.handleDisconnection(user.getChannel(), user.getUUID()));
     }
 }
