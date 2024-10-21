@@ -49,7 +49,10 @@ public class ConnectionMixin {
     private static final ClientVersion CLIENT_VERSION =
             ClientVersion.getById(SharedConstants.getProtocolVersion());
 
-    @Inject(method = "configureSerialization", at = @At("TAIL"))
+    @Inject(
+            method = "configureSerialization",
+            at = @At("TAIL")
+    )
     private static void configureSerialization(
             ChannelPipeline pipeline, PacketFlow flow, boolean memoryOnly,
             BandwidthDebugMonitor bandwithDebugMonitor, CallbackInfo ci
