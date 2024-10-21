@@ -36,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,8 +124,15 @@ public abstract class ProtocolPacketEvent extends PacketEvent implements PlayerE
         return channel;
     }
 
+    public SocketAddress getAddress() {
+        return ChannelHelper.remoteAddress(this.channel);
+    }
+
+    /**
+     * <strong>WARNING:</strong> This doesn't support local addresses or unix sockets.
+     */
     public InetSocketAddress getSocketAddress() {
-        return (InetSocketAddress) ChannelHelper.remoteAddress(channel);
+        return (InetSocketAddress) this.getAddress();
     }
 
     @Override

@@ -30,8 +30,12 @@ public class LogManager {
     }
 
     public void debug(String message) {
-        if (PacketEvents.getAPI().getSettings().isDebugEnabled()) {
+        if (this.isDebug()) {
             log(Level.FINE, null, message);
         }
+    }
+
+    public boolean isDebug() {
+        return PacketEvents.getAPI().getSettings().isDebugEnabled();
     }
 }

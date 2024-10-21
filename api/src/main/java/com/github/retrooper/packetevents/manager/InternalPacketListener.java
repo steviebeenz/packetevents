@@ -30,14 +30,13 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.player.UserProfile;
+import com.github.retrooper.packetevents.util.LogManager;
 import com.github.retrooper.packetevents.util.mappings.SynchronizedRegistriesHandler;
 import com.github.retrooper.packetevents.wrapper.configuration.server.WrapperConfigServerRegistryData;
 import com.github.retrooper.packetevents.wrapper.handshaking.client.WrapperHandshakingClientHandshake;
 import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerLoginSuccess;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerJoinGame;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerRespawn;
-
-import java.net.InetSocketAddress;
 
 public class InternalPacketListener extends PacketListenerAbstract {
 
@@ -124,16 +123,18 @@ public class InternalPacketListener extends PacketListenerAbstract {
     public void onPacketReceive(PacketReceiveEvent event) {
         User user = event.getUser();
         if (event.getPacketType() == PacketType.Handshaking.Client.HANDSHAKE) {
-            Object channel = event.getChannel();
-            InetSocketAddress address = event.getSocketAddress();
-            WrapperHandshakingClientHandshake handshake = new WrapperHandshakingClientHandshake(event);
-            ConnectionState nextState = handshake.getNextConnectionState();
-            ClientVersion clientVersion = handshake.getClientVersion();
-            //Update client version for this event call(and user)
+            WrapperHandshakingClientHandshake packet = new WrapperHandshakingClientHandshake(event);
+            ClientVersion clientVersion = packet.getClientVersion();
+            ConnectionState state = packet.getNextConnectionState();
+
+            LogManager logger = PacketEvents.getAPI().getLogManager();
+            if (logger.isDebug()) {
+                logger.debug("Processed handshake for " + event.getAddress() + ": "
+                        + state.name() + " / " + packet.getClientVersion().getReleaseName());
+            }
+
             user.setClientVersion(clientVersion);
-            PacketEvents.getAPI().getLogManager().debug("Processed " + address.getHostString() + ":" + address.getPort() + "'s client version. Client Version: " + clientVersion.getReleaseName());
-            //Transition into LOGIN or STATUS connection state immediately, to remain in sync with vanilla
-            user.setConnectionState(nextState);
+            user.setConnectionState(state);
         } else if (event.getPacketType() == PacketType.Login.Client.LOGIN_SUCCESS_ACK) {
             user.setDecoderState(ConnectionState.CONFIGURATION);
         } else if (event.getPacketType() == PacketType.Play.Client.CONFIGURATION_ACK) {
