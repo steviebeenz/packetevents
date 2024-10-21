@@ -138,7 +138,7 @@ public final class SpigotReflectionUtil {
     private static Object DIMENSION_TYPE_REGISTRY_KEY;
 
     private static boolean PAPER_ENTITY_LOOKUP_EXISTS = false;
-    private static boolean PAPER_ENTITY_LOOKUP_LEGACY = false;
+    private static boolean PAPER_ENTITY_LOOKUP_LEGACY = true;
 
     private static boolean IS_OBFUSCATED;
 
