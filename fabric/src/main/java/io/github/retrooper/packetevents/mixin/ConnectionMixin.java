@@ -57,6 +57,19 @@ public class ConnectionMixin {
             ChannelPipeline pipeline, PacketFlow flow, boolean memoryOnly,
             BandwidthDebugMonitor bandwithDebugMonitor, CallbackInfo ci
     ) {
+        PacketSide pipelineSide = switch (flow) {
+            case CLIENTBOUND -> PacketSide.CLIENT;
+            case SERVERBOUND -> PacketSide.SERVER;
+        };
+        PacketSide apiSide = PacketEvents.getAPI().getInjector().isServerBound() ? PacketSide.SERVER : PacketSide.CLIENT;
+        if (pipelineSide != apiSide) {
+            // if pipeline side doesn't match api side, don't inject into
+            // this pipeline - it probably means this is the pipeline from
+            // integrated server to minecraft client, which is currently unsupported
+            PacketEvents.getAPI().getLogManager().debug("Skipped pipeline injection on " + pipelineSide);
+            return;
+        }
+
         PacketEvents.getAPI().getLogManager().debug("Game connected!");
 
         Channel channel = pipeline.channel();
@@ -71,9 +84,8 @@ public class ConnectionMixin {
             return;
         }
 
-        PacketSide side = PacketEvents.getAPI().getInjector().isServerBound() ? PacketSide.SERVER : PacketSide.CLIENT;
-        channel.pipeline().addAfter("splitter", PacketEvents.DECODER_NAME, new PacketDecoder(side, user));
-        channel.pipeline().addAfter("prepender", PacketEvents.ENCODER_NAME, new PacketEncoder(side, user));
+        channel.pipeline().addAfter("splitter", PacketEvents.DECODER_NAME, new PacketDecoder(apiSide, user));
+        channel.pipeline().addAfter("prepender", PacketEvents.ENCODER_NAME, new PacketEncoder(apiSide, user));
         channel.closeFuture().addListener((ChannelFutureListener) future ->
                 PacketEventsImplHelper.handleDisconnection(user.getChannel(), user.getUUID()));
     }
