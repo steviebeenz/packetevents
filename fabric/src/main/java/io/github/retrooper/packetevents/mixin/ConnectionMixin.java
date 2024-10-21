@@ -61,7 +61,7 @@ public class ConnectionMixin {
             case CLIENTBOUND -> PacketSide.CLIENT;
             case SERVERBOUND -> PacketSide.SERVER;
         };
-        PacketSide apiSide = PacketEvents.getAPI().getInjector().isServerBound() ? PacketSide.SERVER : PacketSide.CLIENT;
+        PacketSide apiSide = PacketEvents.getAPI().getInjector().getPacketSide();
         if (pipelineSide != apiSide) {
             // if pipeline side doesn't match api side, don't inject into
             // this pipeline - it probably means this is the pipeline from

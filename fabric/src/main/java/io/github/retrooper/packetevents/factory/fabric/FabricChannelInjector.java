@@ -20,6 +20,7 @@ package io.github.retrooper.packetevents.factory.fabric;
 
 import com.github.retrooper.packetevents.injector.ChannelInjector;
 import com.github.retrooper.packetevents.manager.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.protocol.PacketSide;
 import com.github.retrooper.packetevents.protocol.player.User;
 import io.github.retrooper.packetevents.handler.PacketDecoder;
 import io.github.retrooper.packetevents.handler.PacketEncoder;
@@ -32,17 +33,12 @@ import static com.github.retrooper.packetevents.PacketEvents.ENCODER_NAME;
 
 public class FabricChannelInjector implements ChannelInjector {
 
-    private final EnvType environment;
+    private final PacketSide packetSide;
 
     public FabricChannelInjector(EnvType environment) {
-        this.environment = environment;
-    }
-
-    @Override
-    public boolean isServerBound() {
-        return switch (this.environment) {
-            case SERVER -> true;
-            case CLIENT -> false;
+        this.packetSide = switch (environment) {
+            case SERVER -> PacketSide.SERVER;
+            case CLIENT -> PacketSide.CLIENT;
         };
     }
 
@@ -79,5 +75,10 @@ public class FabricChannelInjector implements ChannelInjector {
     @Override
     public boolean isProxy() {
         return false;
+    }
+
+    @Override
+    public PacketSide getPacketSide() {
+        return this.packetSide;
     }
 }

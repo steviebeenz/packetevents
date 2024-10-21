@@ -80,7 +80,7 @@ public final class SynchronizedRegistriesHandler {
                 new RegistryEntry<>(BannerPatterns.getRegistry(), BannerPattern::decode),
                 new RegistryEntry<>(EnchantmentTypes.getRegistry(), EnchantmentType::decode),
                 new RegistryEntry<>(JukeboxSongs.getRegistry(), IJukeboxSong::decode)
-    ).forEach(entry -> REGISTRY_KEYS.put(entry.getRegistryKey(), entry));
+        ).forEach(entry -> REGISTRY_KEYS.put(entry.getRegistryKey(), entry));
     }
 
     private SynchronizedRegistriesHandler() {
