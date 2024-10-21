@@ -26,13 +26,11 @@ import com.github.retrooper.packetevents.manager.player.PlayerManager;
 import com.github.retrooper.packetevents.manager.protocol.ProtocolManager;
 import com.github.retrooper.packetevents.manager.server.ServerManager;
 import com.github.retrooper.packetevents.netty.NettyManager;
-import com.github.retrooper.packetevents.protocol.ProtocolVersion;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.settings.PacketEventsSettings;
 import com.github.retrooper.packetevents.util.LogManager;
 import io.github.retrooper.packetevents.impl.netty.NettyManagerImpl;
 import io.github.retrooper.packetevents.impl.netty.manager.player.PlayerManagerAbstract;
-import io.github.retrooper.packetevents.impl.netty.manager.protocol.ProtocolManagerAbstract;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
@@ -48,14 +46,7 @@ public class FabricPacketEventsAPI extends PacketEventsAPI<FabricLoader> {
     private final EnvType environment;
     private final PacketEventsSettings settings;
 
-    //TODO Implement platform version
-    private final ProtocolManager protocolManager = new ProtocolManagerAbstract() {
-        @Override
-        public ProtocolVersion getPlatformVersion() {
-            return ProtocolVersion.UNKNOWN;
-        }
-    };
-
+    private final ProtocolManager protocolManager;
     private final ServerManager serverManager;
     private final PlayerManagerAbstract playerManager;
     private final ChannelInjector injector;
@@ -74,6 +65,8 @@ public class FabricPacketEventsAPI extends PacketEventsAPI<FabricLoader> {
         this.modId = modId;
         this.environment = environment;
         this.settings = settings;
+
+        this.protocolManager = new FabricProtocolManager(environment);
         this.serverManager = this.constructServerManager();
         this.playerManager = this.constructPlayerManager();
         this.injector = new FabricChannelInjector(environment);
