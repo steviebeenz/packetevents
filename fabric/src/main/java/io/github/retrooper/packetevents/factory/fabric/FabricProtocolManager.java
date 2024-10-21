@@ -18,16 +18,36 @@
 
 package io.github.retrooper.packetevents.factory.fabric;
 
+import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.ProtocolVersion;
 import io.github.retrooper.packetevents.impl.netty.manager.protocol.ProtocolManagerAbstract;
+import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 
+/*
+ * TODO testing:
+ *  - receive on server
+ *  - receive on client
+ *  - write on server
+ */
 public class FabricProtocolManager extends ProtocolManagerAbstract {
 
     private final boolean invert;
 
     public FabricProtocolManager(EnvType environment) {
         this.invert = environment == EnvType.CLIENT;
+    }
+
+    private void receivePacket0(Object channel, Object byteBuf) {
+        if (ChannelHelper.isOpen(channel)) {
+            if (ChannelHelper.pipelineHandlerNames(channel).contains("decompress")) {
+                ChannelHelper.fireChannelReadInContext(channel, "decompress", byteBuf);
+            } else {
+                ChannelHelper.fireChannelRead(channel, byteBuf);
+            }
+        } else {
+            ((ByteBuf) byteBuf).release();
+        }
     }
 
     @Override
@@ -38,7 +58,7 @@ public class FabricProtocolManager extends ProtocolManagerAbstract {
     @Override
     public void sendPacket(Object channel, Object byteBuf) {
         if (this.invert) {
-            super.receivePacket(channel, byteBuf);
+            this.receivePacket0(channel, byteBuf);
         } else {
             super.sendPacket(channel, byteBuf);
         }
@@ -56,7 +76,7 @@ public class FabricProtocolManager extends ProtocolManagerAbstract {
     @Override
     public void writePacket(Object channel, Object byteBuf) {
         if (this.invert) {
-            super.receivePacket(channel, byteBuf);
+            this.receivePacket0(channel, byteBuf);
         } else {
             super.writePacket(channel, byteBuf);
         }
@@ -77,7 +97,7 @@ public class FabricProtocolManager extends ProtocolManagerAbstract {
             // no way to specify wether to flush or not, so just don't
             super.writePacket(channel, byteBuf);
         } else {
-            super.receivePacket(channel, byteBuf);
+            this.receivePacket0(channel, byteBuf);
         }
     }
 
