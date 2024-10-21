@@ -24,12 +24,6 @@ import io.github.retrooper.packetevents.impl.netty.manager.protocol.ProtocolMana
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 
-/*
- * TODO testing:
- *  - receive on server
- *  - receive on client
- *  - write on server
- */
 public class FabricProtocolManager extends ProtocolManagerAbstract {
 
     private final boolean invert;
