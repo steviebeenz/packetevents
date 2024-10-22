@@ -405,7 +405,8 @@ public class WrapperPlayServerChunkData extends PacketWrapper<WrapperPlayServerC
     @Override
     public void copy(WrapperPlayServerChunkData wrapper) {
         this.column = wrapper.column;
-        this.lightData = wrapper.lightData.clone();
+        this.lightData = wrapper.lightData != null
+                ? wrapper.lightData.clone() : null;
         this.ignoreOldData = wrapper.ignoreOldData;
     }
 
