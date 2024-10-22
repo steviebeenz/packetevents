@@ -19,6 +19,7 @@
 package com.github.retrooper.packetevents.protocol.attribute;
 
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.resources.ResourceLocation;
 import com.github.retrooper.packetevents.util.mappings.VersionedRegistry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -45,10 +46,13 @@ public final class Attributes {
 
     public static Attribute getByName(String name) {
         // "remapping" to support < 1.21.2
-        if (name.startsWith("generic.") || name.startsWith("player.") || name.startsWith("zombie.")) {
-            name = name.substring(0, name.indexOf('.') + 1);
+        String normedName = ResourceLocation.normString(name);
+        if (normedName.startsWith(ResourceLocation.VANILLA_NAMESPACE + ":generic.")
+                || normedName.startsWith(ResourceLocation.VANILLA_NAMESPACE + ":player.")
+                || normedName.startsWith(ResourceLocation.VANILLA_NAMESPACE + ":zombie.")) {
+            normedName = normedName.substring(name.indexOf('.') + 1);
         }
-        return REGISTRY.getByName(name);
+        return REGISTRY.getByName(normedName);
     }
 
     public static Attribute getById(ClientVersion version, int id) {
