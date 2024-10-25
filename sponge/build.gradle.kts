@@ -4,7 +4,7 @@ import org.spongepowered.plugin.metadata.model.PluginDependency
 plugins {
     packetevents.`shadow-conventions`
     packetevents.`library-conventions`
-    id("org.spongepowered.gradle.plugin") version("2.2.0")
+    id("org.spongepowered.gradle.plugin") version("2.0.2")
 }
 
 repositories {
