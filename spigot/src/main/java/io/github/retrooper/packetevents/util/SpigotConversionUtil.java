@@ -209,13 +209,16 @@ public class SpigotConversionUtil {
     }
 
     /**
+     * <strong>WARNING:</strong> This is not a safe operation, avoid usage
+     * of this method if possible!
+     * <p>
      * Access the Bukkit Entity associated to the Entity ID.
      *
      * @param world    The world they are in. This field is optional, but is recommended as it could boost performance.
      * @param entityId The associated Entity ID
      * @return The Bukkit Entity
      */
-    public static org.bukkit.entity.Entity getEntityById(@Nullable World world, int entityId) {
+    public static org.bukkit.entity.@Nullable Entity getEntityById(@Nullable World world, int entityId) {
         return SpigotReflectionUtil.getEntityById(world, entityId);
     }
 
