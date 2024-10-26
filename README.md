@@ -12,7 +12,7 @@
 
 - [Read documentation](https://docs.packetevents.com/)
     - [Getting Started](https://docs.packetevents.com/getting-started)
-    - [JavaDocs](javadocs.packetevents.com) 
+    - [JavaDocs](https://javadocs.packetevents.com)
 - [Releases](https://github.com/retrooper/packetevents/releases/)
     - [GitHub](https://github.com/retrooper/packetevents/releases/)
     - [Modrinth](https://modrinth.com/plugin/packetevents)
