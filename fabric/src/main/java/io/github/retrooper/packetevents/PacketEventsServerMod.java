@@ -21,7 +21,6 @@ package io.github.retrooper.packetevents;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
 public class PacketEventsServerMod implements PreLaunchEntrypoint {
@@ -32,9 +31,7 @@ public class PacketEventsServerMod implements PreLaunchEntrypoint {
 
     @Override
     public void onPreLaunch() {
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-            PacketEvents.setAPI(constructApi(PacketEventsMod.MOD_ID));
-            PacketEvents.getAPI().load();
-        }
+        PacketEvents.setAPI(constructApi(PacketEventsMod.MOD_ID));
+        PacketEvents.getAPI().load();
     }
 }
