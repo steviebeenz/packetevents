@@ -22,10 +22,11 @@ import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.fabric.FabricClientPlayerManager;
 import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
 import io.github.retrooper.packetevents.impl.netty.manager.player.PlayerManagerAbstract;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
-public class PacketEventsClientMod implements ClientModInitializer {
+public class PacketEventsClientMod implements PreLaunchEntrypoint {
 
     public static FabricPacketEventsAPI constructApi(String modid) {
         return new FabricPacketEventsAPI(modid, EnvType.CLIENT) {
@@ -37,9 +38,10 @@ public class PacketEventsClientMod implements ClientModInitializer {
     }
 
     @Override
-    public void onInitializeClient() {
-        PacketEvents.setAPI(constructApi("packetevents"));
-        PacketEvents.getAPI().load();
-        PacketEvents.getAPI().init();
+    public void onPreLaunch() {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            PacketEvents.setAPI(constructApi(PacketEventsMod.MOD_ID));
+            PacketEvents.getAPI().load();
+        }
     }
 }

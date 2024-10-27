@@ -12,11 +12,17 @@
   "icon": "assets/packetevents/icon.png",
   "environment": "*",
   "entrypoints": {
-    "client": [
+    "pePreLaunchClient": [
       "io.github.retrooper.packetevents.PacketEventsClientMod"
     ],
-    "server": [
+    "pePreLaunchServer": [
       "io.github.retrooper.packetevents.PacketEventsServerMod"
+    ],
+    "preLaunch": [
+      "io.github.retrooper.packetevents.PacketEventsMod"
+    ],
+    "main": [
+      "io.github.retrooper.packetevents.PacketEventsMod"
     ]
   },
   "mixins": [
