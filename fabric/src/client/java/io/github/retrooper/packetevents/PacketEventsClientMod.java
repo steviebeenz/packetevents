@@ -19,32 +19,26 @@
 package io.github.retrooper.packetevents;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.PacketEventsAPI;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.retrooper.packetevents.factory.fabric.FabricClientPlayerManager;
+import io.github.retrooper.packetevents.factory.fabric.FabricPacketEventsAPI;
+import io.github.retrooper.packetevents.impl.netty.manager.player.PlayerManagerAbstract;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
-public class PacketEventsMod implements PreLaunchEntrypoint, ModInitializer {
+public class PacketEventsClientMod implements PreLaunchEntrypoint {
 
-    public static final String MOD_ID = "packetevents";
-
-    @Override
-    public void onPreLaunch() {
-        FabricLoader loader = FabricLoader.getInstance();
-        String entrypoint = switch (loader.getEnvironmentType()) {
-            case CLIENT -> "pePreLaunchClient";
-            case SERVER -> "pePreLaunchServer";
+    public static FabricPacketEventsAPI constructApi(String modid) {
+        return new FabricPacketEventsAPI(modid, EnvType.CLIENT) {
+            @Override
+            protected PlayerManagerAbstract constructPlayerManager() {
+                return new FabricClientPlayerManager();
+            }
         };
-        loader.invokeEntrypoints(entrypoint,
-                PreLaunchEntrypoint.class,
-                PreLaunchEntrypoint::onPreLaunch);
     }
 
     @Override
-    public void onInitialize() {
-        PacketEventsAPI<?> api = PacketEvents.getAPI();
-        if (api != null) {
-            api.init();
-        }
+    public void onPreLaunch() {
+        PacketEvents.setAPI(constructApi(PacketEventsMod.MOD_ID));
+        PacketEvents.getAPI().load();
     }
 }

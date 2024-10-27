@@ -14,7 +14,6 @@ repositories {
 val minecraft_version: String by project
 val parchment_minecraft_version: String by project
 val parchment_mappings: String by project
-val fabric_version: String by project
 val loader_version: String by project
 
 dependencies {
@@ -34,9 +33,6 @@ dependencies {
     })
 
     modImplementation("net.fabricmc:fabric-loader:$loader_version")
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_version")
 }
 
 tasks {
@@ -53,4 +49,16 @@ tasks {
             archiveVersion = rootProject.ext["versionNoHash"] as String
         }
     }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        register("packetevents") {
+            sourceSet(sourceSets.main.get())
+            sourceSet(sourceSets.maybeCreate("client"))
+        }
+    }
+    accessWidenerPath = sourceSets.main.get().resources.srcDirs.single()
+        .resolve("${rootProject.name}.accesswidener")
 }
