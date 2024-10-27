@@ -75,7 +75,7 @@ public class ConnectionMixin {
         Channel channel = pipeline.channel();
         User user = new User(channel, ConnectionState.HANDSHAKING,
                 CLIENT_VERSION, new UserProfile(null, null));
-        ProtocolManager.USERS.put(channel, user);
+        ProtocolManager.USERS.put(channel.pipeline(), user);
 
         UserConnectEvent connectEvent = new UserConnectEvent(user);
         PacketEvents.getAPI().getEventManager().callEvent(connectEvent);
