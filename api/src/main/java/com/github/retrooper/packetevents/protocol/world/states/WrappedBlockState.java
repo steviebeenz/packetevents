@@ -259,34 +259,36 @@ public class WrappedBlockState {
     }
 
     private static byte getMappingsIndex(ClientVersion version) {
-        if (version.isOlderThan(ClientVersion.V_1_13_2)) {
-            return 0;
-        } else if (version.isOlderThan(ClientVersion.V_1_14)) {
+        if (version.isOlderThan(ClientVersion.V_1_13)) {
+            return 0; // legacy mappings
+        } else if (version.isOlderThan(ClientVersion.V_1_13_2)) {
             return 1;
-        } else if (version.isOlderThan(ClientVersion.V_1_15)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_14)) {
             return 2;
-        } else if (version.isOlderThan(ClientVersion.V_1_16)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_15)) {
             return 3;
-        } else if (version.isOlderThan(ClientVersion.V_1_16_2)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_16)) {
             return 4;
-        } else if (version.isOlderThan(ClientVersion.V_1_17)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_16_2)) {
             return 5;
-        } else if (version.isOlderThan(ClientVersion.V_1_19)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_17)) {
             return 6;
-        } else if (version.isOlderThan(ClientVersion.V_1_19_3)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_19)) {
             return 7;
-        } else if (version.isOlderThan(ClientVersion.V_1_19_4)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_19_3)) {
             return 8;
-        } else if (version.isOlderThan(ClientVersion.V_1_20)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_19_4)) {
             return 9;
-        } else if (version.isOlderThan(ClientVersion.V_1_20_2)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_20)) {
             return 10;
-        } else if (version.isOlderThan(ClientVersion.V_1_20_3)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_20_2)) {
             return 11;
-        } else if (version.isOlderThan(ClientVersion.V_1_20_5)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_20_3)) {
             return 12;
-        } else if (version.isOlderThan(ClientVersion.V_1_21_2)) {
+        } else if (version.isOlderThan(ClientVersion.V_1_20_5)) {
             return 13;
+        } else if (version.isOlderThan(ClientVersion.V_1_21_2)) {
+            return 14;
         } else {
             // TODO add on update
             return 127;
