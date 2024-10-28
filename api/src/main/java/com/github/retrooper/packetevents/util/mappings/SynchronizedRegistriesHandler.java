@@ -128,15 +128,25 @@ public final class SynchronizedRegistriesHandler {
     ) {
         Object cacheKey = PacketEvents.getAPI().getServerManager().getRegistryCacheKey(user, version);
         for (NBT tag : registryData.getTags().values()) {
-            NBTCompound compound = (NBTCompound) tag;
-            // extract registry name
-            ResourceLocation registryName = new ResourceLocation(compound.getStringTagValueOrThrow("type"));
-            // extract registry entries
-            NBTList<NBTCompound> nbtElements = compound.getCompoundListTagOrNull("value");
-            if (nbtElements != null) {
-                // store registry elements
-                handleRegistry(user, version, registryName,
-                        RegistryElement.convertNbt(nbtElements), cacheKey);
+            //On 1.16 they send an NBTList for dimension.
+            if (tag instanceof NBTList) {
+                NBTList<NBTCompound> list = (NBTList<NBTCompound>) tag;
+                handleRegistry(user, version, DimensionTypes.getRegistry().getRegistryKey(),
+                        RegistryElement.convertNbt(list), cacheKey);
+
+            }
+            //Newer versions
+            else {
+                NBTCompound compound = (NBTCompound) tag;
+                // extract registry name
+                ResourceLocation registryName = new ResourceLocation(compound.getStringTagValueOrThrow("type"));
+                // extract registry entries
+                NBTList<NBTCompound> nbtElements = compound.getCompoundListTagOrNull("value");
+                if (nbtElements != null) {
+                    // store registry elements
+                    handleRegistry(user, version, registryName,
+                            RegistryElement.convertNbt(nbtElements), cacheKey);
+                }
             }
         }
     }
