@@ -258,9 +258,11 @@ public class WrappedBlockState {
         return clone ? state.clone() : state;
     }
 
+    private static final byte LEGACY_MAPPING_INDEX = 0;
+
     private static byte getMappingsIndex(ClientVersion version) {
         if (version.isOlderThan(ClientVersion.V_1_13)) {
-            return 0; // legacy mappings
+            return LEGACY_MAPPING_INDEX;
         } else if (version.isOlderThan(ClientVersion.V_1_13_2)) {
             return 1;
         } else if (version.isOlderThan(ClientVersion.V_1_14)) {
@@ -386,11 +388,11 @@ public class WrappedBlockState {
                 }
             }
 
-            BY_ID.put((byte) 0, stateByIdMap);
-            INTO_ID.put((byte) 0, stateToIdMap);
-            BY_STRING.put((byte) 0, stateByStringMap);
-            INTO_STRING.put((byte) 0, stateToStringMap);
-            DEFAULT_STATES.put((byte) 0, stateTypeToBlockStateMap);
+            BY_ID.put(LEGACY_MAPPING_INDEX, stateByIdMap);
+            INTO_ID.put(LEGACY_MAPPING_INDEX, stateToIdMap);
+            BY_STRING.put(LEGACY_MAPPING_INDEX, stateByStringMap);
+            INTO_STRING.put(LEGACY_MAPPING_INDEX, stateToStringMap);
+            DEFAULT_STATES.put(LEGACY_MAPPING_INDEX, stateTypeToBlockStateMap);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load legacy block mappings", e);
         }
