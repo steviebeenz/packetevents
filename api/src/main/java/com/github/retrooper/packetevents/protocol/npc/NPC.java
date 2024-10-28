@@ -273,7 +273,7 @@ public class NPC {
         for (Object channel : channels) {
             //Destroy team
             WrapperPlayServerTeams removeTeam =
-                    new WrapperPlayServerTeams("custom_name_team",
+                    new WrapperPlayServerTeams("custom_name_team-" + id,
                             WrapperPlayServerTeams.TeamMode.REMOVE,
                             Optional.empty());
             PacketEvents.getAPI().getProtocolManager().sendPacket(channel, removeTeam);
@@ -436,11 +436,11 @@ public class NPC {
     }
 
     private WrapperPlayServerTeams generateTeamsData() {
-        return new WrapperPlayServerTeams("custom_name_team",
+        return new WrapperPlayServerTeams("custom_name_team-" + id,
                 WrapperPlayServerTeams.TeamMode.CREATE,
                 Optional.of(
                         new WrapperPlayServerTeams.ScoreBoardTeamInfo(
-                                Component.text("custom_name_team"),
+                                Component.text("custom_name_team-" + id),
                                 prefixName,
                                 suffixName,
                                 WrapperPlayServerTeams.NameTagVisibility.ALWAYS,
