@@ -42,7 +42,7 @@ dependencies {
     }
     shadow(project(":api", "shadow"))
     shadow(project(":netty-common"))
-    shadow(libs.bstats.sponge)
+    compileShadowOnly(libs.bstats.sponge)
 
     compileOnly(libs.via.version)
 }
