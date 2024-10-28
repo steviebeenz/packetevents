@@ -6,8 +6,14 @@ plugins {
     com.gradleup.shadow
 }
 
+val compileShadowOnly: Configuration by configurations.creating {
+    configurations.compileOnly.get().extendsFrom(this)
+}
+
 tasks {
     shadowJar {
+        configurations.add(compileShadowOnly)
+
         archiveFileName = "packetevents-${project.name}-${rootProject.ext["versionNoHash"]}.jar"
         archiveClassifier = null
 
