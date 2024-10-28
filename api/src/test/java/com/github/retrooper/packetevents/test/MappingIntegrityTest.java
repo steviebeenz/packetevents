@@ -47,6 +47,8 @@ public class MappingIntegrityTest extends BaseDummyAPITest {
     @Test
     @DisplayName("Test state type mapping")
     public void testStateTypeMapping() {
+        assertEquals(1, StateTypes.STONE.getMapped().getId(ClientVersion.V_1_8));
+        assertEquals(57, StateTypes.DIAMOND_BLOCK.getMapped().getId(ClientVersion.V_1_8));
         assertEquals(1, StateTypes.STONE.getMapped().getId(ClientVersion.V_1_20_5));
         assertEquals(1059, StateTypes.HEAVY_CORE.getMapped().getId(ClientVersion.V_1_20_5));
     }
@@ -54,6 +56,9 @@ public class MappingIntegrityTest extends BaseDummyAPITest {
     @Test
     @DisplayName("Test block state mapping")
     public void testBlockStateMapping() {
+        assertEquals(16, StateTypes.STONE.createBlockState(ClientVersion.V_1_8).getGlobalId());
+        assertEquals(57 * 16, StateTypes.DIAMOND_BLOCK.createBlockState(ClientVersion.V_1_8).getGlobalId());
+
         assertEquals(1, StateTypes.STONE.createBlockState(ClientVersion.V_1_20_5).getGlobalId());
 
         WrappedBlockState crafterState = StateTypes.CRAFTER.createBlockState(ClientVersion.V_1_20_5);

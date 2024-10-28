@@ -35,12 +35,8 @@ import com.github.retrooper.packetevents.util.mappings.SynchronizedRegistriesHan
 import com.github.retrooper.packetevents.wrapper.configuration.server.WrapperConfigServerRegistryData;
 import com.github.retrooper.packetevents.wrapper.handshaking.client.WrapperHandshakingClientHandshake;
 import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerLoginSuccess;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerJoinGame;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerRespawn;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class InternalPacketListener extends PacketListenerAbstract {
 
@@ -145,18 +141,6 @@ public class InternalPacketListener extends PacketListenerAbstract {
             user.setDecoderState(ConnectionState.CONFIGURATION);
         } else if (event.getPacketType() == PacketType.Configuration.Client.CONFIGURATION_END_ACK) {
             user.setDecoderState(ConnectionState.PLAY);
-        } else if (event.getPacketType() == PacketType.Play.Client.CLIENT_STATUS) {
-            asd = ThreadLocalRandom.current().nextLong();
-            user.sendMessage("sending keepalive... " + asd);
-            user.writePacket(new WrapperPlayServerKeepAlive(asd));
-        } else if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
-            long id = new WrapperPlayClientKeepAlive(event).getId();
-            if (id == asd) {
-                user.sendMessage("RECEIVED KEEP ALIVE!!! " + id);
-                event.setCancelled(true);
-            }
         }
     }
-
-    private long asd;
 }
