@@ -66,6 +66,32 @@ import static com.github.retrooper.packetevents.util.adventure.AdventureIndexUti
  * Mappings from modern versions are from ViaVersion, who have a similar (but a bit slower) system.
  */
 public class WrappedBlockState {
+
+    private static final byte[] MAPPING_INDEXES;
+    private static final byte LEGACY_MAPPING_INDEX = 0;
+
+    static {
+        // all versions where block state mappings were changed TODO UPDATE
+        ClientVersion[] mappingSteps = new ClientVersion[]{
+                ClientVersion.V_1_13, ClientVersion.V_1_13_2, ClientVersion.V_1_14, ClientVersion.V_1_15,
+                ClientVersion.V_1_16, ClientVersion.V_1_16_2, ClientVersion.V_1_17, ClientVersion.V_1_19,
+                ClientVersion.V_1_19_3, ClientVersion.V_1_19_4, ClientVersion.V_1_20, ClientVersion.V_1_20_2,
+                ClientVersion.V_1_20_3, ClientVersion.V_1_20_5, ClientVersion.V_1_21_2,
+        };
+
+        ClientVersion[] versions = ClientVersion.values();
+        MAPPING_INDEXES = new byte[versions.length];
+
+        for (int i = 0, j = 0; i < versions.length; i++) {
+            ClientVersion version = versions[i];
+            if (j < mappingSteps.length
+                    && version == mappingSteps[j]) {
+                j++;
+            }
+            MAPPING_INDEXES[version.ordinal()] = (byte) (LEGACY_MAPPING_INDEX + j);
+        }
+    }
+
     private static final WrappedBlockState AIR = new WrappedBlockState(StateTypes.AIR, new EnumMap<>(StateValue.class), 0, (byte) 0);
     private static final Map<Byte, Map<String, WrappedBlockState>> BY_STRING = new HashMap<>();
     private static final Map<Byte, Map<Integer, WrappedBlockState>> BY_ID = new HashMap<>();
@@ -258,43 +284,8 @@ public class WrappedBlockState {
         return clone ? state.clone() : state;
     }
 
-    private static final byte LEGACY_MAPPING_INDEX = 0;
-
     private static byte getMappingsIndex(ClientVersion version) {
-        if (version.isOlderThan(ClientVersion.V_1_13)) {
-            return LEGACY_MAPPING_INDEX;
-        } else if (version.isOlderThan(ClientVersion.V_1_13_2)) {
-            return 1;
-        } else if (version.isOlderThan(ClientVersion.V_1_14)) {
-            return 2;
-        } else if (version.isOlderThan(ClientVersion.V_1_15)) {
-            return 3;
-        } else if (version.isOlderThan(ClientVersion.V_1_16)) {
-            return 4;
-        } else if (version.isOlderThan(ClientVersion.V_1_16_2)) {
-            return 5;
-        } else if (version.isOlderThan(ClientVersion.V_1_17)) {
-            return 6;
-        } else if (version.isOlderThan(ClientVersion.V_1_19)) {
-            return 7;
-        } else if (version.isOlderThan(ClientVersion.V_1_19_3)) {
-            return 8;
-        } else if (version.isOlderThan(ClientVersion.V_1_19_4)) {
-            return 9;
-        } else if (version.isOlderThan(ClientVersion.V_1_20)) {
-            return 10;
-        } else if (version.isOlderThan(ClientVersion.V_1_20_2)) {
-            return 11;
-        } else if (version.isOlderThan(ClientVersion.V_1_20_3)) {
-            return 12;
-        } else if (version.isOlderThan(ClientVersion.V_1_20_5)) {
-            return 13;
-        } else if (version.isOlderThan(ClientVersion.V_1_21_2)) {
-            return 14;
-        } else {
-            // TODO add on update
-            return 127;
-        }
+        return MAPPING_INDEXES[version.ordinal()];
     }
 
     private static void loadLegacy(Map<BinaryNBTCompound, Map.Entry<Map<StateValue, Object>, String>> cache) {
