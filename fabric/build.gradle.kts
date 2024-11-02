@@ -43,11 +43,13 @@ tasks {
         }
     }
 
-    sequenceOf(remapJar, remapSourcesJar).forEach {
-        it {
-            archiveBaseName = "${rootProject.name}-fabric"
-            archiveVersion = rootProject.ext["versionNoHash"] as String
-        }
+    remapJar {
+        archiveBaseName = "${rootProject.name}-fabric"
+        archiveVersion = rootProject.ext["versionNoHash"] as String
+    }
+
+    remapSourcesJar {
+        archiveVersion = rootProject.ext["versionNoHash"] as String
     }
 }
 
