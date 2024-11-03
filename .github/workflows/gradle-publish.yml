@@ -62,3 +62,9 @@ jobs:
         with:
           name: fabric-build
           path: fabric/build/libs
+
+      - name: Upload build artifacts sponge
+        uses: actions/upload-artifact@v4
+        with:
+          name: sponge-build
+          path: sponge/build/libs
