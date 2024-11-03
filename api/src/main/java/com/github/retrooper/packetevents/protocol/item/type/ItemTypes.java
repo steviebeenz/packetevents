@@ -1449,6 +1449,18 @@ public class ItemTypes {
     public static final ItemType FIELD_MASONED_BANNER_PATTERN = builder("field_masoned_banner_pattern").setMaxAmount(1).build();
     public static final ItemType BORDURE_INDENTED_BANNER_PATTERN = builder("bordure_indented_banner_pattern").setMaxAmount(1).build();
 
+    // 1.21.4 items
+    public static final ItemType OPEN_EYEBLOSSOM = builder("open_eyeblossom").setMaxAmount(64).setPlacedType(StateTypes.OPEN_EYEBLOSSOM).build();
+    public static final ItemType CLOSED_EYEBLOSSOM = builder("closed_eyeblossom").setMaxAmount(64).setPlacedType(StateTypes.CLOSED_EYEBLOSSOM).build();
+    public static final ItemType RESIN_CLUMP = builder("resin_clump").setMaxAmount(64).setPlacedType(StateTypes.RESIN_CLUMP).build();
+    public static final ItemType RESIN_BLOCK = builder("resin_block").setMaxAmount(64).setPlacedType(StateTypes.RESIN_BLOCK).build();
+    public static final ItemType RESIN_BRICKS = builder("resin_bricks").setMaxAmount(64).setPlacedType(StateTypes.RESIN_BRICKS).build();
+    public static final ItemType RESIN_BRICK_STAIRS = builder("resin_brick_stairs").setMaxAmount(64).setPlacedType(StateTypes.RESIN_BRICK_STAIRS).build();
+    public static final ItemType RESIN_BRICK_SLAB = builder("resin_brick_slab").setMaxAmount(64).setPlacedType(StateTypes.RESIN_BRICK_SLAB).build();
+    public static final ItemType RESIN_BRICK_WALL = builder("resin_brick_wall").setMaxAmount(64).setPlacedType(StateTypes.RESIN_BRICK_WALL).build();
+    public static final ItemType CHISELED_RESIN_BRICKS = builder("chiseled_resin_bricks").setMaxAmount(64).setPlacedType(StateTypes.CHISELED_RESIN_BRICKS).build();
+    public static final ItemType RESIN_BRICK = builder("resin_brick").setMaxAmount(64).build();
+
     /**
      * @deprecated Burning furnace shows up as a missing texture, removed in 1.9
      */
