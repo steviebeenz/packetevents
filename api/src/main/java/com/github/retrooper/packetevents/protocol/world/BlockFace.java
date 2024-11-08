@@ -153,15 +153,16 @@ public enum BlockFace {
         }
     }
 
-    /** Returns int representing cardinal directions with south as the starting index at 0. UP and DOWN return -1
+    /**
+     * Returns an integer representing cardinal directions with south as the starting index at 0. UP and DOWN return -1
      * <p>
      * Used by Mojang for calculations involving mob AI, decorations, paintings, item frames, maps,
      * structure generation, campfires, stairs, connecting blocks, and flowerbeds.
-     * Also used for getting Directions and Blockfaces as Rotations.
+     * Also used for getting directions and block faces as rotations.
      *
-     * @return int horizontal id
+     * @return integer horizontal id
      */
-    public int getHorizontalID() {
+    public int getHorizontalId() {
         switch (this) {
             case DOWN:
             case UP:
@@ -175,7 +176,7 @@ public enum BlockFace {
             case EAST:
                 return 3;
             default:
-                throw new IllegalArgumentException("Invalid blockface input for getHorizontalID");
+                throw new IllegalArgumentException("Invalid block face input for getHorizontalId");
         }
     }
 
