@@ -417,7 +417,9 @@ public class NPC {
     }
 
     public void setTeamName(String teamName) {
-        this.teamName = teamName;
+        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_18)) {
+            this.teamName = teamName.substring(0, 16);
+        } else this.teamName = teamName;
     }
 
     @Nullable
