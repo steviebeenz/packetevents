@@ -61,7 +61,7 @@ public class NPC {
         this.nameColor = nameColor;
         this.prefixName = prefixName;
         this.suffixName = suffixName;
-        this.teamName = "custom_name_team-" + id;
+        this.teamName = "npc-" + id;
     }
 
     public NPC(UserProfile profile, int entityId, @Nullable Component tabName) {
