@@ -35,6 +35,16 @@ tasks {
         options.release = 8
     }
 
+    javadoc {
+        title = "packetevents-${project.name} v${rootProject.version}"
+        options.encoding = Charsets.UTF_8.name()
+        options.overview = rootProject.file("buildSrc/src/main/resources/javadoc-overview.html").toString()
+        setDestinationDir(file("${project.layout.buildDirectory.asFile.get()}/docs/javadoc"))
+        options {
+            (this as CoreJavadocOptions).addBooleanOption("Xdoclint:none", true)
+        }
+    }
+
     processResources {
         inputs.property("version", project.version)
         filesMatching(listOf("plugin.yml", "bungee.yml", "velocity-plugin.json", "fabric.mod.json")) {

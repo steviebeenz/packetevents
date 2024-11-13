@@ -113,11 +113,11 @@ mappingCompression {
 }
 
 tasks {
+    assemble {
+        setDependsOn(dependsOn.filterNot { it == "shadowNoAdventure" })
+    }
+
     javadoc {
-        setDestinationDir(file("${project.layout.buildDirectory.asFile.get()}/docs/javadoc"))
-        options {
-            (this as CoreJavadocOptions).addBooleanOption("Xdoclint:none", true)
-        }
         mustRunAfter(generateVersionsFile)
     }
 
