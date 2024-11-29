@@ -90,6 +90,9 @@ public final class TrimMaterials {
     public static final TrimMaterial QUARTZ = define("quartz", ItemTypes.QUARTZ, 0.1f, 0xE3D4C4);
     public static final TrimMaterial REDSTONE = define("redstone", ItemTypes.REDSTONE, 0.4f, 0x971607);
 
+    // added with 1.21.4
+    public static final TrimMaterial RESIN = define("resin", ItemTypes.RESIN_BRICK, 0.11f, 0xFC7812);
+
     /**
      * Returns an immutable view of the trim materials.
      *
