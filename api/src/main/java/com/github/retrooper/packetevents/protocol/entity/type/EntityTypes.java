@@ -22,6 +22,7 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.resources.ResourceLocation;
 import com.github.retrooper.packetevents.util.mappings.TypesBuilder;
 import com.github.retrooper.packetevents.util.mappings.TypesBuilderData;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -315,6 +316,10 @@ public class EntityTypes {
     public static final EntityType CHERRY_BOAT = define("cherry_boat", BOAT);
     public static final EntityType CHERRY_CHEST_BOAT = define("cherry_chest_boat", CHEST_BOAT);
     public static final EntityType CREAKING = define("creaking", ABSTRACT_MONSTER);
+    /**
+     * Removed with 1.21.4
+     */
+    @ApiStatus.Obsolete
     public static final EntityType CREAKING_TRANSIENT = define("creaking_transient", CREAKING);
     public static final EntityType DARK_OAK_BOAT = define("dark_oak_boat", BOAT);
     public static final EntityType DARK_OAK_CHEST_BOAT = define("dark_oak_chest_boat", CHEST_BOAT);
