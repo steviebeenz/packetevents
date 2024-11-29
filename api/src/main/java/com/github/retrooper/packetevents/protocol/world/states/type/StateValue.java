@@ -43,6 +43,7 @@ import com.github.retrooper.packetevents.protocol.world.states.enums.VaultState;
 import com.github.retrooper.packetevents.protocol.world.states.enums.VerticalDirection;
 import com.github.retrooper.packetevents.protocol.world.states.enums.West;
 import net.kyori.adventure.util.Index;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -135,7 +136,20 @@ public enum StateValue {
     VERTICAL_DIRECTION("vertical_direction", VerticalDirection.class, VerticalDirection::valueOf),
     WATERLOGGED("waterlogged", boolean.class, Boolean::parseBoolean),
     WEST("west", West.class, West::valueOf),
-    CREAKING("creaking", CreakingHeartState.class, CreakingHeartState::valueOf);
+    /**
+     * Removed with 1.21.4
+     */
+    @ApiStatus.Obsolete
+    CREAKING("creaking", CreakingHeartState.class, CreakingHeartState::valueOf),
+    /**
+     * Added with 1.21.4
+     */
+    ACTIVE("active", boolean.class, Boolean::parseBoolean),
+    /**
+     * Added with 1.21.4
+     */
+    NATURAL("natural", boolean.class, Boolean::parseBoolean),
+    ;
 
     public static final Index<String, StateValue> NAME_INDEX = Index.create(
             StateValue.class, StateValue::getName);

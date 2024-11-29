@@ -18,6 +18,12 @@
 
 package com.github.retrooper.packetevents.protocol.world.states.enums;
 
+import org.jetbrains.annotations.ApiStatus;
+
+/**
+ * Removed with 1.21.4
+ */
+@ApiStatus.Obsolete
 public enum CreakingHeartState {
 
     DISABLED,

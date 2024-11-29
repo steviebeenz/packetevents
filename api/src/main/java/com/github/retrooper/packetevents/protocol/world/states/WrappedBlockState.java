@@ -40,6 +40,7 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateValue;
 import com.github.retrooper.packetevents.util.BinaryNBTCompound;
 import com.github.retrooper.packetevents.util.mappings.MappingHelper;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
@@ -1377,14 +1378,54 @@ public class WrappedBlockState {
         checkIsStillValid();
     }
 
+    /**
+     * Removed with 1.21.4
+     */
+    @ApiStatus.Obsolete
     public CreakingHeartState getCreaking() {
         return (CreakingHeartState) data.get(StateValue.CREAKING);
     }
 
+    /**
+     * Removed with 1.21.4
+     */
+    @ApiStatus.Obsolete
     public void setCreaking(CreakingHeartState creakingHeartState) {
         checkIfCloneNeeded();
         data.put(StateValue.CREAKING, creakingHeartState);
         checkIsStillValid();
+    }
+
+    /**
+     * Added with 1.21.4
+     */
+    public boolean isActive() {
+        return (boolean) this.data.get(StateValue.ACTIVE);
+    }
+
+    /**
+     * Added with 1.21.4
+     */
+    public void setActive(boolean active) {
+        this.checkIfCloneNeeded();
+        this.data.put(StateValue.ACTIVE, active);
+        this.checkIsStillValid();
+    }
+
+    /**
+     * Added with 1.21.4
+     */
+    public boolean isNatural() {
+        return (boolean) this.data.get(StateValue.NATURAL);
+    }
+
+    /**
+     * Added with 1.21.4
+     */
+    public void setNatural(boolean natural) {
+        this.checkIfCloneNeeded();
+        this.data.put(StateValue.NATURAL, natural);
+        this.checkIsStillValid();
     }
 
     // End all block data types
