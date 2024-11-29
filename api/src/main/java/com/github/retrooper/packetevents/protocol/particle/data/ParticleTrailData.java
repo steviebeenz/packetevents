@@ -32,6 +32,9 @@ public class ParticleTrailData extends ParticleData {
 
     private Vector3d target;
     private Color color;
+    /**
+     * Added with 1.21.4
+     */
     private int duration;
 
     public ParticleTrailData(Vector3d target, Color color) {
@@ -99,10 +102,16 @@ public class ParticleTrailData extends ParticleData {
         this.color = color;
     }
 
+    /**
+     * Added with 1.21.4
+     */
     public int getDuration() {
         return this.duration;
     }
 
+    /**
+     * Added with 1.21.4
+     */
     public void setDuration(int duration) {
         this.duration = duration;
     }
