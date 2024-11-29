@@ -31,11 +31,11 @@ public class ItemConsumable {
     private Animation animation;
     private Sound sound;
     private boolean consumeParticles;
-    private List<ConsumeEffect> effects;
+    private List<ConsumeEffect<?>> effects;
 
     public ItemConsumable(
             float consumeSeconds, Animation animation, Sound sound,
-            boolean consumeParticles, List<ConsumeEffect> effects
+            boolean consumeParticles, List<ConsumeEffect<?>> effects
     ) {
         this.consumeSeconds = consumeSeconds;
         this.animation = animation;
@@ -49,7 +49,7 @@ public class ItemConsumable {
         Animation animation = wrapper.readEnum(Animation.values());
         Sound sound = Sound.read(wrapper);
         boolean consumeParticles = wrapper.readBoolean();
-        List<ConsumeEffect> effects = wrapper.readList(ConsumeEffect::readFull);
+        List<ConsumeEffect<?>> effects = wrapper.readList(ConsumeEffect::readFull);
         return new ItemConsumable(consumeSeconds, animation, sound, consumeParticles, effects);
     }
 
@@ -93,11 +93,11 @@ public class ItemConsumable {
         this.consumeParticles = consumeParticles;
     }
 
-    public List<ConsumeEffect> getEffects() {
+    public List<ConsumeEffect<?>> getEffects() {
         return this.effects;
     }
 
-    public void setEffects(List<ConsumeEffect> effects) {
+    public void setEffects(List<ConsumeEffect<?>> effects) {
         this.effects = effects;
     }
 
@@ -124,6 +124,7 @@ public class ItemConsumable {
     }
 
     public enum Animation {
+
         NONE,
         EAT,
         DRINK,
@@ -134,5 +135,10 @@ public class ItemConsumable {
         SPYGLASS,
         TOOT_HORN,
         BRUSH,
+        /**
+         * Added with 1.21.4
+         */
+        BUNDLE,
+        ;
     }
 }
