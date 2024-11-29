@@ -21,6 +21,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.util.Codec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +36,7 @@ public final class BackwardCompatUtil {
     public static final boolean IS_4_13_0_OR_NEWER;
     public static final boolean IS_4_15_0_OR_NEWER;
     public static final boolean IS_4_17_0_OR_NEWER;
+    public static final boolean IS_4_18_0_OR_NEWER;
 
     static {
         boolean is4_10_0OrNewer = false;
@@ -71,6 +73,15 @@ public final class BackwardCompatUtil {
         } catch (Throwable ignored) {
         }
         IS_4_17_0_OR_NEWER = is4_17_0OrNewer;
+
+        boolean is4_18_0OrNewer = false;
+        try {
+            // shadow color support was added in 4.18.0
+            ShadowColor.shadowColor(0xCAFEBABE);
+            is4_18_0OrNewer = true;
+        } catch (Throwable ignored) {
+        }
+        IS_4_18_0_OR_NEWER = is4_18_0OrNewer;
     }
 
     private BackwardCompatUtil() {
