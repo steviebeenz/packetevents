@@ -33,7 +33,7 @@ public class ItemEquippable {
 
     private EquipmentSlot slot;
     private Sound equipSound;
-    private @Nullable ResourceLocation model;
+    private @Nullable ResourceLocation assetId;
     private @Nullable ResourceLocation cameraOverlay;
     private @Nullable MappedEntitySet<EntityType> allowedEntities;
     private boolean dispensable;
@@ -43,7 +43,7 @@ public class ItemEquippable {
     public ItemEquippable(
             EquipmentSlot slot,
             Sound equipSound,
-            @Nullable ResourceLocation model,
+            @Nullable ResourceLocation assetId,
             @Nullable ResourceLocation cameraOverlay,
             @Nullable MappedEntitySet<EntityType> allowedEntities,
             boolean dispensable,
@@ -52,7 +52,7 @@ public class ItemEquippable {
     ) {
         this.slot = slot;
         this.equipSound = equipSound;
-        this.model = model;
+        this.assetId = assetId;
         this.cameraOverlay = cameraOverlay;
         this.allowedEntities = allowedEntities;
         this.dispensable = dispensable;
@@ -77,7 +77,7 @@ public class ItemEquippable {
     public static void write(PacketWrapper<?> wrapper, ItemEquippable equippable) {
         wrapper.writeEnum(equippable.slot);
         Sound.write(wrapper, equippable.equipSound);
-        wrapper.writeOptional(equippable.model, PacketWrapper::writeIdentifier);
+        wrapper.writeOptional(equippable.assetId, PacketWrapper::writeIdentifier);
         wrapper.writeOptional(equippable.cameraOverlay, PacketWrapper::writeIdentifier);
         wrapper.writeOptional(equippable.allowedEntities, MappedEntitySet::write);
         wrapper.writeBoolean(equippable.dispensable);
@@ -101,12 +101,12 @@ public class ItemEquippable {
         this.equipSound = equipSound;
     }
 
-    public @Nullable ResourceLocation getModel() {
-        return this.model;
+    public @Nullable ResourceLocation getAssetId() {
+        return this.assetId;
     }
 
-    public void setModel(@Nullable ResourceLocation model) {
-        this.model = model;
+    public void setAssetId(@Nullable ResourceLocation assetId) {
+        this.assetId = assetId;
     }
 
     public @Nullable ResourceLocation getCameraOverlay() {
@@ -149,6 +149,16 @@ public class ItemEquippable {
         this.damageOnHurt = damageOnHurt;
     }
 
+    @Deprecated
+    public @Nullable ResourceLocation getModel() {
+        return this.assetId;
+    }
+
+    @Deprecated
+    public void setModel(@Nullable ResourceLocation assetId) {
+        this.assetId = assetId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -159,18 +169,18 @@ public class ItemEquippable {
         if (this.damageOnHurt != that.damageOnHurt) return false;
         if (this.slot != that.slot) return false;
         if (!Objects.equals(this.equipSound, that.equipSound)) return false;
-        if (!Objects.equals(this.model, that.model)) return false;
+        if (!Objects.equals(this.assetId, that.assetId)) return false;
         if (!Objects.equals(this.cameraOverlay, that.cameraOverlay)) return false;
         return Objects.equals(this.allowedEntities, that.allowedEntities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.slot, this.equipSound, this.model, this.cameraOverlay, this.allowedEntities, this.dispensable, this.swappable, this.damageOnHurt);
+        return Objects.hash(this.slot, this.equipSound, this.assetId, this.cameraOverlay, this.allowedEntities, this.dispensable, this.swappable, this.damageOnHurt);
     }
 
     @Override
     public String toString() {
-        return "ItemEquippable{slot=" + this.slot + ", equipSound=" + this.equipSound + ", model=" + this.model + ", cameraOverlay=" + this.cameraOverlay + ", allowedEntities=" + this.allowedEntities + ", dispensable=" + this.dispensable + ", swappable=" + this.swappable + ", damageOnHurt=" + this.damageOnHurt + '}';
+        return "ItemEquippable{slot=" + this.slot + ", equipSound=" + this.equipSound + ", model=" + this.assetId + ", cameraOverlay=" + this.cameraOverlay + ", allowedEntities=" + this.allowedEntities + ", dispensable=" + this.dispensable + ", swappable=" + this.swappable + ", damageOnHurt=" + this.damageOnHurt + '}';
     }
 }
