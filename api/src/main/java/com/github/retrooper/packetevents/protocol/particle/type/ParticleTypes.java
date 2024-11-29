@@ -282,6 +282,9 @@ public class ParticleTypes {
             ParticleBlockStateData::read, ParticleBlockStateData::write,
             ParticleBlockStateData::decode, ParticleBlockStateData::encode);
 
+    // added with 1.21.4
+    public static final ParticleType<ParticleData> PALE_OAK_LEAVES = define("pale_oak_leaves");
+
     /**
      * Returns an immutable view of the particle types.
      *
