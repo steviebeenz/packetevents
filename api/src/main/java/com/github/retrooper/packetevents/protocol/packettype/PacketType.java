@@ -71,6 +71,7 @@ import com.github.retrooper.packetevents.protocol.packettype.serverbound.Serverb
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_9;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.util.VersionMapper;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -621,11 +622,19 @@ public final class PacketType {
             PLAYER_FLYING,
             VEHICLE_MOVE,
             STEER_BOAT,
+            /**
+             * Removed with 1.21.4
+             */
+            @ApiStatus.Obsolete
             PICK_ITEM,
             CRAFT_RECIPE_REQUEST,
             PLAYER_ABILITIES,
             PLAYER_DIGGING,
             ENTITY_ACTION,
+            /**
+             * Removed with 1.21.2
+             */
+            @ApiStatus.Obsolete
             STEER_VEHICLE,
             PONG,
             RECIPE_BOOK_DATA,
@@ -648,32 +657,73 @@ public final class PacketType {
             PLAYER_BLOCK_PLACEMENT,
             USE_ITEM,
 
-            // Added in 1.19
+            /**
+             * Added with 1.19
+             */
             CHAT_COMMAND,
 
-            // Added in 1.19.1
+            /**
+             * Added with 1.19.1
+             */
             CHAT_ACK,
 
-            // Added in 1.19.3
+            /**
+             * Added with 1.19.3
+             */
             CHAT_SESSION_UPDATE,
 
-            // Added in 1.20.2
+            /**
+             * Added with 1.20.2
+             */
             CHUNK_BATCH_ACK,
+            /**
+             * Added with 1.20.2
+             */
             CONFIGURATION_ACK,
+            /**
+             * Added with 1.20.2
+             */
             DEBUG_PING,
 
-            // Added in 1.20.3
+            /**
+             * Added with 1.20.3
+             */
             SLOT_STATE_CHANGE,
 
-            // Added in 1.20.5
+            /**
+             * Added with 1.20.5
+             */
             CHAT_COMMAND_UNSIGNED,
+            /**
+             * Added with 1.20.5
+             */
             COOKIE_RESPONSE,
+            /**
+             * Added with 1.20.5
+             */
             DEBUG_SAMPLE_SUBSCRIPTION,
 
-            // added in 1.21.2
+            /**
+             * Added with 1.21.2
+             */
             CLIENT_TICK_END,
+            /**
+             * Added with 1.21.2
+             */
             SELECT_BUNDLE_ITEM,
-            PLAYER_INPUT, // based on STEER_VEHICLE
+            /**
+             * Added with 1.21.2, based on {@link #STEER_VEHICLE}
+             */
+            PLAYER_INPUT,
+
+            /**
+             * Added with 1.21.4
+             */
+            PICK_ITEM_FROM_BLOCK,
+            /**
+             * Added with 1.21.4
+             */
+            PICK_ITEM_FROM_ENTITY,
             ;
 
             private static int INDEX = 0;
