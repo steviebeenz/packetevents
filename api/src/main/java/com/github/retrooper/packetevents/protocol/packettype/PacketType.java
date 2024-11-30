@@ -724,6 +724,10 @@ public final class PacketType {
              * Added with 1.21.4
              */
             PICK_ITEM_FROM_ENTITY,
+            /**
+             * Added with 1.21.4
+             */
+            PLAYER_LOADED,
             ;
 
             private static int INDEX = 0;
