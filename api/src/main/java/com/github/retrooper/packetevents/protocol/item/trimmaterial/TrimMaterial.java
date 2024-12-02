@@ -18,6 +18,7 @@
 
 package com.github.retrooper.packetevents.protocol.item.trimmaterial;
 
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.item.armormaterial.ArmorMaterial;
 import com.github.retrooper.packetevents.protocol.item.armormaterial.ArmorMaterials;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
@@ -34,6 +35,7 @@ import com.github.retrooper.packetevents.util.adventure.AdventureSerializer;
 import com.github.retrooper.packetevents.util.mappings.TypesBuilderData;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -42,10 +44,16 @@ import java.util.Map;
 
 public interface TrimMaterial extends MappedEntity, CopyableEntity<TrimMaterial>, DeepComparableEntity {
 
+    float FALLBACK_ITEM_MODEL_INDEX = 0f;
+
     String getAssetName();
 
     ItemType getIngredient();
 
+    /**
+     * Removed in 1.21.4
+     */
+    @ApiStatus.Obsolete
     float getItemModelIndex();
 
     default @Nullable String getArmorMaterialOverride(ArmorMaterial armorMaterial) {
@@ -63,7 +71,8 @@ public interface TrimMaterial extends MappedEntity, CopyableEntity<TrimMaterial>
     static TrimMaterial readDirect(PacketWrapper<?> wrapper) {
         String assetName = wrapper.readString();
         ItemType ingredient = wrapper.readMappedEntity(ItemTypes::getById);
-        float itemModelIndex = wrapper.readFloat();
+        float itemModelIndex = wrapper.getServerVersion().isNewerThanOrEquals(ServerVersion.V_1_21_4)
+                ? FALLBACK_ITEM_MODEL_INDEX : wrapper.readFloat();
         Map<ArmorMaterial, String> overrideArmorMaterials = wrapper.readMap(
                 ew -> ew.readMappedEntity(ArmorMaterials::getById),
                 PacketWrapper::readString);
@@ -78,7 +87,9 @@ public interface TrimMaterial extends MappedEntity, CopyableEntity<TrimMaterial>
     static void writeDirect(PacketWrapper<?> wrapper, TrimMaterial material) {
         wrapper.writeString(material.getAssetName());
         wrapper.writeMappedEntity(material.getIngredient());
-        wrapper.writeFloat(material.getItemModelIndex());
+        if (wrapper.getServerVersion().isNewerThanOrEquals(ServerVersion.V_1_21_4)) {
+            wrapper.writeFloat(material.getItemModelIndex());
+        }
         wrapper.writeMap(material.getOverrideArmorMaterials(),
                 PacketWrapper::writeMappedEntity, PacketWrapper::writeString);
         wrapper.writeComponent(material.getDescription());
@@ -88,7 +99,8 @@ public interface TrimMaterial extends MappedEntity, CopyableEntity<TrimMaterial>
         NBTCompound compound = (NBTCompound) nbt;
         String assetName = compound.getStringTagValueOrThrow("asset_name");
         ItemType ingredient = ItemTypes.getByName(compound.getStringTagValueOrThrow("ingredient"));
-        float itemModelIndex = compound.getNumberTagOrThrow("item_model_index").getAsFloat();
+        float itemModelIndex = version.isNewerThanOrEquals(ClientVersion.V_1_21_4)
+                ? FALLBACK_ITEM_MODEL_INDEX : compound.getNumberTagOrThrow("item_model_index").getAsFloat();
         NBTCompound overrideArmorMaterialsTag = compound.getCompoundTagOrNull("override_armor_materials");
         Map<ArmorMaterial, String> overrideArmorMaterials;
         if (overrideArmorMaterialsTag != null) {
@@ -121,7 +133,9 @@ public interface TrimMaterial extends MappedEntity, CopyableEntity<TrimMaterial>
         NBTCompound compound = new NBTCompound();
         compound.setTag("asset_name", new NBTString(material.getAssetName()));
         compound.setTag("ingredient", new NBTString(material.getIngredient().getName().toString()));
-        compound.setTag("item_model_index", new NBTFloat(material.getItemModelIndex()));
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_21_4)) {
+            compound.setTag("item_model_index", new NBTFloat(material.getItemModelIndex()));
+        }
         if (overrideArmorMaterialsTag != null) {
             compound.setTag("override_armor_materials", overrideArmorMaterialsTag);
         }

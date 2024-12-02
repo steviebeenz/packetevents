@@ -37,6 +37,21 @@ public class StaticTrimMaterial extends AbstractMappedEntity implements TrimMate
     private final Component description;
 
     public StaticTrimMaterial(
+            String assetName, ItemType ingredient,
+            Map<ArmorMaterial, String> overrideArmorMaterials, Component description
+    ) {
+        this(null, assetName, ingredient, FALLBACK_ITEM_MODEL_INDEX, overrideArmorMaterials, description);
+    }
+
+    public StaticTrimMaterial(
+            @Nullable TypesBuilderData data,
+            String assetName, ItemType ingredient,
+            Map<ArmorMaterial, String> overrideArmorMaterials, Component description
+    ) {
+        this(data, assetName, ingredient, FALLBACK_ITEM_MODEL_INDEX, overrideArmorMaterials, description);
+    }
+
+    public StaticTrimMaterial(
             String assetName, ItemType ingredient, float itemModelIndex,
             Map<ArmorMaterial, String> overrideArmorMaterials, Component description
     ) {
