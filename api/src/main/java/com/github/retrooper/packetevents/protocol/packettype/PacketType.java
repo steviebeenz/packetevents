@@ -66,6 +66,7 @@ import com.github.retrooper.packetevents.protocol.packettype.serverbound.Serverb
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_20_3;
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_20_5;
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_21_2;
+import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_21_4;
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_7_10;
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_8;
 import com.github.retrooper.packetevents.protocol.packettype.serverbound.ServerboundPacketType_1_9;
@@ -129,7 +130,8 @@ public final class PacketType {
             ClientVersion.V_1_20_2,
             ClientVersion.V_1_20_3,
             ClientVersion.V_1_20_5,
-            ClientVersion.V_1_21_2);
+            ClientVersion.V_1_21_2,
+            ClientVersion.V_1_21_4);
 
     // TODO UPDATE Update packet type mappings (config clientbound pt. 1)
     private static final VersionMapper CLIENTBOUND_CONFIG_VERSION_MAPPER = new VersionMapper(
@@ -783,6 +785,7 @@ public final class PacketType {
                 loadPacketIds(ServerboundPacketType_1_20_3.values());
                 loadPacketIds(ServerboundPacketType_1_20_5.values());
                 loadPacketIds(ServerboundPacketType_1_21_2.values());
+                loadPacketIds(ServerboundPacketType_1_21_4.values());
                 //TODO UPDATE Update packet type mappings (serverbound pt. 2)
             }
 
