@@ -25,6 +25,15 @@ import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 
 public class WrapperPlayServerEntityVelocity extends PacketWrapper<WrapperPlayServerEntityVelocity> {
+
+    // with larger short values there is a loss of precision and
+    // re-encoding packets may cause the velocity to change
+    //
+    // as vanilla just casts to an int instead of properly rounding,
+    // packetevents has to add a small number to the calculated velocity
+    // to work around the loss of precision
+    private static final double PRECISION_LOSS_FIX = 1e-11d;
+
     private int entityID;
     private Vector3d velocity;
 
@@ -48,7 +57,11 @@ public class WrapperPlayServerEntityVelocity extends PacketWrapper<WrapperPlaySe
         double velX = (double) readShort() / 8000.0;
         double velY = (double) readShort() / 8000.0;
         double velZ = (double) readShort() / 8000.0;
-        velocity = new Vector3d(velX, velY, velZ);
+        velocity = new Vector3d(
+                velX + Math.copySign(PRECISION_LOSS_FIX, velX),
+                velY + Math.copySign(PRECISION_LOSS_FIX, velY),
+                velZ + Math.copySign(PRECISION_LOSS_FIX, velZ)
+        );
     }
 
     @Override
