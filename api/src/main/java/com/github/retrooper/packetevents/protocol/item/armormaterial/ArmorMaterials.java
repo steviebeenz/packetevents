@@ -41,7 +41,7 @@ public final class ArmorMaterials {
     }
 
     private static final VersionedRegistry<ArmorMaterial> REGISTRY = new VersionedRegistry<>(
-            "equipment_asset", "item/item_armor_material_mappings");
+            "equipment_asset", "item/equipment_asset_mappings");
 
     private ArmorMaterials() {
     }

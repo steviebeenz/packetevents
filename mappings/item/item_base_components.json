@@ -312,7 +312,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LmJsYWNrX2NhbmRsZQA="
     },
     "black_carpet": {
-      "equippable": "BrEGARZtaW5lY3JhZnQ6YmxhY2tfY2FycGV0AAEDTIABAQEB",
+      "equippable": "BrEGARZtaW5lY3JhZnQ6YmxhY2tfY2FycGV0AAEDS38BAQE=",
       "item_model": "Fm1pbmVjcmFmdDpibGFja19jYXJwZXQ=",
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LmJsYWNrX2NhcnBldAA="
     },
@@ -387,7 +387,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmJsdWVfY2FuZGxlAA=="
     },
     "blue_carpet": {
-      "equippable": "BrEGARVtaW5lY3JhZnQ6Ymx1ZV9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARVtaW5lY3JhZnQ6Ymx1ZV9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "FW1pbmVjcmFmdDpibHVlX2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmJsdWVfY2FycGV0AA=="
     },
@@ -490,7 +490,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LmJyb3duX2NhbmRsZQA="
     },
     "brown_carpet": {
-      "equippable": "BrEGARZtaW5lY3JhZnQ6YnJvd25fY2FycGV0AAEDTIABAQEB",
+      "equippable": "BrEGARZtaW5lY3JhZnQ6YnJvd25fY2FycGV0AAEDS38BAQE=",
       "item_model": "Fm1pbmVjcmFmdDpicm93bl9jYXJwZXQ=",
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LmJyb3duX2NhcnBldAA="
     },
@@ -983,7 +983,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmN5YW5fY2FuZGxlAA=="
     },
     "cyan_carpet": {
-      "equippable": "BrEGARVtaW5lY3JhZnQ6Y3lhbl9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARVtaW5lY3JhZnQ6Y3lhbl9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "FW1pbmVjcmFmdDpjeWFuX2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmN5YW5fY2FycGV0AA=="
     },
@@ -1503,7 +1503,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmdyYXlfY2FuZGxlAA=="
     },
     "gray_carpet": {
-      "equippable": "BrEGARVtaW5lY3JhZnQ6Z3JheV9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARVtaW5lY3JhZnQ6Z3JheV9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "FW1pbmVjcmFmdDpncmF5X2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmdyYXlfY2FycGV0AA=="
     },
@@ -1557,7 +1557,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LmdyZWVuX2NhbmRsZQA="
     },
     "green_carpet": {
-      "equippable": "BrEGARZtaW5lY3JhZnQ6Z3JlZW5fY2FycGV0AAEDTIABAQEB",
+      "equippable": "BrEGARZtaW5lY3JhZnQ6Z3JlZW5fY2FycGV0AAEDS38BAQE=",
       "item_model": "Fm1pbmVjcmFmdDpncmVlbl9jYXJwZXQ=",
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LmdyZWVuX2NhcnBldAA="
     },
@@ -1805,6 +1805,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAVYmxvY2subWluZWNyYWZ0LmxldmVyAA=="
     },
     "light": {
+      "block_state": "AQVsZXZlbAIxNQ==",
       "item_model": "D21pbmVjcmFmdDpsaWdodA==",
       "item_name": "CggACXRyYW5zbGF0ZQAVYmxvY2subWluZWNyYWZ0LmxpZ2h0AA==",
       "rarity": "Aw=="
@@ -1825,7 +1826,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAhYmxvY2subWluZWNyYWZ0LmxpZ2h0X2JsdWVfY2FuZGxlAA=="
     },
     "light_blue_carpet": {
-      "equippable": "BrEGARttaW5lY3JhZnQ6bGlnaHRfYmx1ZV9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARttaW5lY3JhZnQ6bGlnaHRfYmx1ZV9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "G21pbmVjcmFmdDpsaWdodF9ibHVlX2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAhYmxvY2subWluZWNyYWZ0LmxpZ2h0X2JsdWVfY2FycGV0AA=="
     },
@@ -1879,7 +1880,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAhYmxvY2subWluZWNyYWZ0LmxpZ2h0X2dyYXlfY2FuZGxlAA=="
     },
     "light_gray_carpet": {
-      "equippable": "BrEGARttaW5lY3JhZnQ6bGlnaHRfZ3JheV9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARttaW5lY3JhZnQ6bGlnaHRfZ3JheV9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "G21pbmVjcmFmdDpsaWdodF9ncmF5X2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAhYmxvY2subWluZWNyYWZ0LmxpZ2h0X2dyYXlfY2FycGV0AA=="
     },
@@ -1953,7 +1954,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmxpbWVfY2FuZGxlAA=="
     },
     "lime_carpet": {
-      "equippable": "BrEGARVtaW5lY3JhZnQ6bGltZV9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARVtaW5lY3JhZnQ6bGltZV9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "FW1pbmVjcmFmdDpsaW1lX2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LmxpbWVfY2FycGV0AA=="
     },
@@ -2015,7 +2016,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAeYmxvY2subWluZWNyYWZ0Lm1hZ2VudGFfY2FuZGxlAA=="
     },
     "magenta_carpet": {
-      "equippable": "BrEGARhtaW5lY3JhZnQ6bWFnZW50YV9jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARhtaW5lY3JhZnQ6bWFnZW50YV9jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "GG1pbmVjcmFmdDptYWdlbnRhX2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAeYmxvY2subWluZWNyYWZ0Lm1hZ2VudGFfY2FycGV0AA=="
     },
@@ -2346,7 +2347,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAdYmxvY2subWluZWNyYWZ0Lm9yYW5nZV9jYW5kbGUA"
     },
     "orange_carpet": {
-      "equippable": "BrEGARdtaW5lY3JhZnQ6b3JhbmdlX2NhcnBldAABA0yAAQEBAQ==",
+      "equippable": "BrEGARdtaW5lY3JhZnQ6b3JhbmdlX2NhcnBldAABA0t/AQEB",
       "item_model": "F21pbmVjcmFmdDpvcmFuZ2VfY2FycGV0",
       "item_name": "CggACXRyYW5zbGF0ZQAdYmxvY2subWluZWNyYWZ0Lm9yYW5nZV9jYXJwZXQA"
     },
@@ -2544,7 +2545,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LnBpbmtfY2FuZGxlAA=="
     },
     "pink_carpet": {
-      "equippable": "BrEGARVtaW5lY3JhZnQ6cGlua19jYXJwZXQAAQNMgAEBAQE=",
+      "equippable": "BrEGARVtaW5lY3JhZnQ6cGlua19jYXJwZXQAAQNLfwEBAQ==",
       "item_model": "FW1pbmVjcmFmdDpwaW5rX2NhcnBldA==",
       "item_name": "CggACXRyYW5zbGF0ZQAbYmxvY2subWluZWNyYWZ0LnBpbmtfY2FycGV0AA=="
     },
@@ -2780,7 +2781,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAdYmxvY2subWluZWNyYWZ0LnB1cnBsZV9jYW5kbGUA"
     },
     "purple_carpet": {
-      "equippable": "BrEGARdtaW5lY3JhZnQ6cHVycGxlX2NhcnBldAABA0yAAQEBAQ==",
+      "equippable": "BrEGARdtaW5lY3JhZnQ6cHVycGxlX2NhcnBldAABA0t/AQEB",
       "item_model": "F21pbmVjcmFmdDpwdXJwbGVfY2FycGV0",
       "item_name": "CggACXRyYW5zbGF0ZQAdYmxvY2subWluZWNyYWZ0LnB1cnBsZV9jYXJwZXQA"
     },
@@ -2886,7 +2887,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAaYmxvY2subWluZWNyYWZ0LnJlZF9jYW5kbGUA"
     },
     "red_carpet": {
-      "equippable": "BrEGARRtaW5lY3JhZnQ6cmVkX2NhcnBldAABA0yAAQEBAQ==",
+      "equippable": "BrEGARRtaW5lY3JhZnQ6cmVkX2NhcnBldAABA0t/AQEB",
       "item_model": "FG1pbmVjcmFmdDpyZWRfY2FycGV0",
       "item_name": "CggACXRyYW5zbGF0ZQAaYmxvY2subWluZWNyYWZ0LnJlZF9jYXJwZXQA"
     },
@@ -3827,7 +3828,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LndoaXRlX2NhbmRsZQA="
     },
     "white_carpet": {
-      "equippable": "BrEGARZtaW5lY3JhZnQ6d2hpdGVfY2FycGV0AAEDTIABAQEB",
+      "equippable": "BrEGARZtaW5lY3JhZnQ6d2hpdGVfY2FycGV0AAEDS38BAQE=",
       "item_model": "Fm1pbmVjcmFmdDp3aGl0ZV9jYXJwZXQ=",
       "item_name": "CggACXRyYW5zbGF0ZQAcYmxvY2subWluZWNyYWZ0LndoaXRlX2NhcnBldAA="
     },
@@ -3895,7 +3896,7 @@
       "item_name": "CggACXRyYW5zbGF0ZQAdYmxvY2subWluZWNyYWZ0LnllbGxvd19jYW5kbGUA"
     },
     "yellow_carpet": {
-      "equippable": "BrEGARdtaW5lY3JhZnQ6eWVsbG93X2NhcnBldAABA0yAAQEBAQ==",
+      "equippable": "BrEGARdtaW5lY3JhZnQ6eWVsbG93X2NhcnBldAABA0t/AQEB",
       "item_model": "F21pbmVjcmFmdDp5ZWxsb3dfY2FycGV0",
       "item_name": "CggACXRyYW5zbGF0ZQAdYmxvY2subWluZWNyYWZ0LnllbGxvd19jYXJwZXQA"
     },
@@ -4524,7 +4525,7 @@
     },
     "diamond_horse_armor": {
       "attribute_modifiers": "AgAUbWluZWNyYWZ0OmFybW9yLmJvZHlAJgAAAAAAAAAJARRtaW5lY3JhZnQ6YXJtb3IuYm9keUAAAAAAAAAAAAkB",
-      "equippable": "BuUFARFtaW5lY3JhZnQ6ZGlhbW9uZAABAkABAQA=",
+      "equippable": "BuUFARFtaW5lY3JhZnQ6ZGlhbW9uZAABAj8BAQA=",
       "item_model": "HW1pbmVjcmFmdDpkaWFtb25kX2hvcnNlX2FybW9y",
       "item_name": "CggACXRyYW5zbGF0ZQAiaXRlbS5taW5lY3JhZnQuZGlhbW9uZF9ob3JzZV9hcm1vcgA=",
       "max_stack_size": "AQ=="
@@ -4918,7 +4919,7 @@
     },
     "golden_horse_armor": {
       "attribute_modifiers": "AgAUbWluZWNyYWZ0OmFybW9yLmJvZHlAHAAAAAAAAAAJARRtaW5lY3JhZnQ6YXJtb3IuYm9keQAAAAAAAAAAAAkB",
-      "equippable": "BuUFAQ5taW5lY3JhZnQ6Z29sZAABAkABAQA=",
+      "equippable": "BuUFAQ5taW5lY3JhZnQ6Z29sZAABAj8BAQA=",
       "item_model": "HG1pbmVjcmFmdDpnb2xkZW5faG9yc2VfYXJtb3I=",
       "item_name": "CggACXRyYW5zbGF0ZQAhaXRlbS5taW5lY3JhZnQuZ29sZGVuX2hvcnNlX2FybW9yAA==",
       "max_stack_size": "AQ=="
@@ -5125,7 +5126,7 @@
     },
     "iron_horse_armor": {
       "attribute_modifiers": "AgAUbWluZWNyYWZ0OmFybW9yLmJvZHlAFAAAAAAAAAAJARRtaW5lY3JhZnQ6YXJtb3IuYm9keQAAAAAAAAAAAAkB",
-      "equippable": "BuUFAQ5taW5lY3JhZnQ6aXJvbgABAkABAQA=",
+      "equippable": "BuUFAQ5taW5lY3JhZnQ6aXJvbgABAj8BAQA=",
       "item_model": "Gm1pbmVjcmFmdDppcm9uX2hvcnNlX2FybW9y",
       "item_name": "CggACXRyYW5zbGF0ZQAfaXRlbS5taW5lY3JhZnQuaXJvbl9ob3JzZV9hcm1vcgA=",
       "max_stack_size": "AQ=="
@@ -5255,7 +5256,7 @@
     },
     "leather_horse_armor": {
       "attribute_modifiers": "AgAUbWluZWNyYWZ0OmFybW9yLmJvZHlACAAAAAAAAAAJARRtaW5lY3JhZnQ6YXJtb3IuYm9keQAAAAAAAAAAAAkB",
-      "equippable": "BuUFARFtaW5lY3JhZnQ6bGVhdGhlcgABAkABAQA=",
+      "equippable": "BuUFARFtaW5lY3JhZnQ6bGVhdGhlcgABAj8BAQA=",
       "item_model": "HW1pbmVjcmFmdDpsZWF0aGVyX2hvcnNlX2FybW9y",
       "item_name": "CggACXRyYW5zbGF0ZQAiaXRlbS5taW5lY3JhZnQubGVhdGhlcl9ob3JzZV9hcm1vcgA=",
       "max_stack_size": "AQ=="
@@ -6153,7 +6154,7 @@
       "max_stack_size": "AQ=="
     },
     "spyglass": {
-      "item_model": "Gm1pbmVjcmFmdDpzcHlnbGFzc19pbl9oYW5k",
+      "item_model": "Em1pbmVjcmFmdDpzcHlnbGFzcw==",
       "item_name": "CggACXRyYW5zbGF0ZQAXaXRlbS5taW5lY3JhZnQuc3B5Z2xhc3MA",
       "max_stack_size": "AQ=="
     },
@@ -6299,7 +6300,7 @@
       "attribute_modifiers": "AgIcbWluZWNyYWZ0OmJhc2VfYXR0YWNrX2RhbWFnZUAgAAAAAAAAAAEEG21pbmVjcmFmdDpiYXNlX2F0dGFja19zcGVlZMAHMzNAAAAAAAEB",
       "damage": "AA==",
       "enchantable": "AQ==",
-      "item_model": "GW1pbmVjcmFmdDp0cmlkZW50X2luX2hhbmQ=",
+      "item_model": "EW1pbmVjcmFmdDp0cmlkZW50",
       "item_name": "CggACXRyYW5zbGF0ZQAWaXRlbS5taW5lY3JhZnQudHJpZGVudAA=",
       "max_damage": "+gE=",
       "max_stack_size": "AQ==",
@@ -6431,7 +6432,7 @@
     "wolf_armor": {
       "attribute_modifiers": "AgAUbWluZWNyYWZ0OmFybW9yLmJvZHlAJgAAAAAAAAAJARRtaW5lY3JhZnQ6YXJtb3IuYm9keQAAAAAAAAAAAAkB",
       "damage": "AA==",
-      "equippable": "Bk0BGW1pbmVjcmFmdDphcm1hZGlsbG9fc2N1dGUAAQKOAQEBAQ==",
+      "equippable": "Bk0BGW1pbmVjcmFmdDphcm1hZGlsbG9fc2N1dGUAAQKNAQEBAQ==",
       "item_model": "FG1pbmVjcmFmdDp3b2xmX2FybW9y",
       "item_name": "CggACXRyYW5zbGF0ZQAZaXRlbS5taW5lY3JhZnQud29sZl9hcm1vcgA=",
       "max_damage": "QA==",
