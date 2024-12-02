@@ -22,6 +22,9 @@ import com.github.retrooper.packetevents.protocol.mapper.MappedEntity;
 import com.github.retrooper.packetevents.protocol.nbt.NBT;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.function.Function;
 
 public interface ComponentType<T> extends MappedEntity {
 
@@ -32,6 +35,9 @@ public interface ComponentType<T> extends MappedEntity {
     T decode(NBT nbt, ClientVersion version);
 
     NBT encode(T value, ClientVersion version);
+
+    @ApiStatus.Internal
+    <Z> ComponentType<Z> legacyMap(Function<T, Z> mapper, Function<Z, T> unmapper);
 
     interface Decoder<T> {
 

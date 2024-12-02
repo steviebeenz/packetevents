@@ -27,6 +27,8 @@ import com.github.retrooper.packetevents.wrapper.PacketWrapper.Reader;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper.Writer;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
+
 public class StaticComponentType<T> extends AbstractMappedEntity implements ComponentType<T> {
 
     private final @Nullable Reader<T> reader;
@@ -90,5 +92,14 @@ public class StaticComponentType<T> extends AbstractMappedEntity implements Comp
             return this.encoder.encode(value, version);
         }
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <Z> ComponentType<Z> legacyMap(Function<T, Z> mapper, Function<Z, T> unmapper) {
+        Reader<Z> reader = this.reader != null ? wrapper -> mapper.apply(this.reader.apply(wrapper)) : null;
+        Writer<Z> writer = this.writer != null ? (wrapper, value) -> this.writer.accept(wrapper, unmapper.apply(value)) : null;
+        Decoder<Z> decoder = this.decoder != null ? (nbt, version) -> mapper.apply(this.decoder.decode(nbt, version)) : null;
+        Encoder<Z> encoder = this.encoder != null ? (value, version) -> this.encoder.encode(unmapper.apply(value), version) : null;
+        return new StaticComponentType<>(this.data, reader, writer, decoder, encoder);
     }
 }

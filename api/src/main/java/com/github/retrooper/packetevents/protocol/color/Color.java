@@ -26,6 +26,7 @@ import com.github.retrooper.packetevents.protocol.nbt.NBTNumber;
 import com.github.retrooper.packetevents.protocol.nbt.NBTType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.util.MathUtil;
+import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import net.kyori.adventure.util.RGBLike;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -54,6 +55,14 @@ public class Color implements RGBLike {
 
     public Color(int rgb) {
         this((rgb >> 16) & BIT_MASK, (rgb >> 8) & BIT_MASK, rgb & BIT_MASK);
+    }
+
+    public static Color read(PacketWrapper<?> wrapper) {
+        return new Color(wrapper.readInt());
+    }
+
+    public static void write(PacketWrapper<?> wrapper, Color color) {
+        wrapper.writeInt(color.asRGB());
     }
 
     public static Color decode(NBT nbt, ClientVersion version) {
