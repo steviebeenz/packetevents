@@ -41,26 +41,26 @@ import java.util.stream.Collectors;
 public class WrapperPlayServerUpdateAttributes extends PacketWrapper<WrapperPlayServerUpdateAttributes> {
 
     private static final List<Map.Entry<String, Attribute>> PRE_1_16_ATTRIBUTES = Collections.unmodifiableList(Arrays.asList(
-            new SimpleEntry<>("generic.maxHealth", Attributes.GENERIC_MAX_HEALTH),
-            new SimpleEntry<>("Max Health", Attributes.GENERIC_MAX_HEALTH),
-            new SimpleEntry<>("zombie.spawnReinforcements", Attributes.ZOMBIE_SPAWN_REINFORCEMENTS),
-            new SimpleEntry<>("Spawn Reinforcements Chance", Attributes.ZOMBIE_SPAWN_REINFORCEMENTS),
+            new SimpleEntry<>("generic.maxHealth", Attributes.MAX_HEALTH),
+            new SimpleEntry<>("Max Health", Attributes.MAX_HEALTH),
+            new SimpleEntry<>("zombie.spawnReinforcements", Attributes.SPAWN_REINFORCEMENTS),
+            new SimpleEntry<>("Spawn Reinforcements Chance", Attributes.SPAWN_REINFORCEMENTS),
             new SimpleEntry<>("horse.jumpStrength", Attributes.HORSE_JUMP_STRENGTH),
             new SimpleEntry<>("Jump Strength", Attributes.HORSE_JUMP_STRENGTH),
-            new SimpleEntry<>("generic.followRange", Attributes.GENERIC_FOLLOW_RANGE),
-            new SimpleEntry<>("Follow Range", Attributes.GENERIC_FOLLOW_RANGE),
-            new SimpleEntry<>("generic.knockbackResistance", Attributes.GENERIC_KNOCKBACK_RESISTANCE),
-            new SimpleEntry<>("Knockback Resistance", Attributes.GENERIC_KNOCKBACK_RESISTANCE),
-            new SimpleEntry<>("generic.movementSpeed", Attributes.GENERIC_MOVEMENT_SPEED),
-            new SimpleEntry<>("Movement Speed", Attributes.GENERIC_MOVEMENT_SPEED),
-            new SimpleEntry<>("generic.flyingSpeed", Attributes.GENERIC_FLYING_SPEED),
-            new SimpleEntry<>("Flying Speed", Attributes.GENERIC_FLYING_SPEED),
-            new SimpleEntry<>("generic.attackDamage", Attributes.GENERIC_ATTACK_DAMAGE),
-            new SimpleEntry<>("generic.attackKnockback", Attributes.GENERIC_ATTACK_KNOCKBACK),
-            new SimpleEntry<>("generic.attackSpeed", Attributes.GENERIC_ATTACK_SPEED),
-            new SimpleEntry<>("generic.armorToughness", Attributes.GENERIC_ARMOR_TOUGHNESS),
-            new SimpleEntry<>("generic.armor", Attributes.GENERIC_ARMOR),
-            new SimpleEntry<>("generic.luck", Attributes.GENERIC_LUCK)
+            new SimpleEntry<>("generic.followRange", Attributes.FOLLOW_RANGE),
+            new SimpleEntry<>("Follow Range", Attributes.FOLLOW_RANGE),
+            new SimpleEntry<>("generic.knockbackResistance", Attributes.KNOCKBACK_RESISTANCE),
+            new SimpleEntry<>("Knockback Resistance", Attributes.KNOCKBACK_RESISTANCE),
+            new SimpleEntry<>("generic.movementSpeed", Attributes.MOVEMENT_SPEED),
+            new SimpleEntry<>("Movement Speed", Attributes.MOVEMENT_SPEED),
+            new SimpleEntry<>("generic.flyingSpeed", Attributes.FLYING_SPEED),
+            new SimpleEntry<>("Flying Speed", Attributes.FLYING_SPEED),
+            new SimpleEntry<>("generic.attackDamage", Attributes.ATTACK_DAMAGE),
+            new SimpleEntry<>("generic.attackKnockback", Attributes.ATTACK_KNOCKBACK),
+            new SimpleEntry<>("generic.attackSpeed", Attributes.ATTACK_SPEED),
+            new SimpleEntry<>("generic.armorToughness", Attributes.ARMOR_TOUGHNESS),
+            new SimpleEntry<>("generic.armor", Attributes.ARMOR),
+            new SimpleEntry<>("generic.luck", Attributes.LUCK)
     ));
     private static final Map<String, Attribute> PRE_1_16_ATTRIBUTES_MAP = PRE_1_16_ATTRIBUTES.stream()
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

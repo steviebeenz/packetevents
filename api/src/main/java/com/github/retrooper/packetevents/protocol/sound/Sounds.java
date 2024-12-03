@@ -1756,6 +1756,23 @@ public class Sounds {
     public static final Sound BLOCK_SPAWNER_PLACE = define("block.spawner.place");
     public static final Sound BLOCK_SPAWNER_STEP = define("block.spawner.step");
 
+    // added with 1.21.4
+    public static final Sound ENTITY_CREAKING_TWITCH = define("entity.creaking.twitch");
+    public static final Sound BLOCK_EYEBLOSSOM_OPEN_LONG = define("block.eyeblossom.open_long");
+    public static final Sound BLOCK_EYEBLOSSOM_OPEN = define("block.eyeblossom.open");
+    public static final Sound BLOCK_EYEBLOSSOM_CLOSE_LONG = define("block.eyeblossom.close_long");
+    public static final Sound BLOCK_EYEBLOSSOM_CLOSE = define("block.eyeblossom.close");
+    public static final Sound BLOCK_EYEBLOSSOM_IDLE = define("block.eyeblossom.idle");
+    public static final Sound BLOCK_RESIN_BREAK = define("block.resin.break");
+    public static final Sound BLOCK_RESIN_FALL = define("block.resin.fall");
+    public static final Sound BLOCK_RESIN_PLACE = define("block.resin.place");
+    public static final Sound BLOCK_RESIN_STEP = define("block.resin.step");
+    public static final Sound BLOCK_RESIN_BRICKS_BREAK = define("block.resin_bricks.break");
+    public static final Sound BLOCK_RESIN_BRICKS_FALL = define("block.resin_bricks.fall");
+    public static final Sound BLOCK_RESIN_BRICKS_HIT = define("block.resin_bricks.hit");
+    public static final Sound BLOCK_RESIN_BRICKS_PLACE = define("block.resin_bricks.place");
+    public static final Sound BLOCK_RESIN_BRICKS_STEP = define("block.resin_bricks.step");
+
     /**
      * Returns an immutable view of the sounds.
      *

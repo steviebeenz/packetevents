@@ -96,28 +96,28 @@ public class EntityPositionSource extends PositionSource {
     }
 
     /**
-     * Note: Only used when handling particles through registries and version is >= 1.19.
+     * Note: Only used when handling particles through registries and version is at least 1.19.
      */
     public Optional<UUID> getEntityUniqueId() {
         return this.entityUniqueId;
     }
 
     /**
-     * Note: Only used when handling particles through registries and version is >= 1.19.
+     * Note: Only used when handling particles through registries and version is at least 1.19.
      */
     public void setEntityUniqueId(Optional<UUID> entityUniqueId) {
         this.entityUniqueId = entityUniqueId;
     }
 
     /**
-     * Note: Only used when handling particles through particle packets or version is < 1.19.
+     * Note: Only used when handling particles through particle packets or version is older than 1.19.
      */
     public int getEntityId() {
         return this.entityId;
     }
 
     /**
-     * Note: Only used when handling particles through particle packets or version is < 1.19.
+     * Note: Only used when handling particles through particle packets or version is older than 1.19.
      */
     public void setEntityId(int entityId) {
         this.entityId = entityId;

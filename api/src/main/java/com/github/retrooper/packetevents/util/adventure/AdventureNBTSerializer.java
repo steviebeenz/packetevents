@@ -53,6 +53,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.DataComponentValue;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -325,9 +326,15 @@ public class AdventureNBTSerializer implements ComponentSerializer<Component, Co
 
         reader.useUTF("font", value -> style.font(Key.key(value)));
         reader.useUTF("color", value -> {
-            TextColor color = deserializeColor(value);
+            TextColor color = this.deserializeColor(value);
             if (color != null) style.color(color);
         });
+        if (BackwardCompatUtil.IS_4_18_0_OR_NEWER) {
+            reader.useUTF("shadow_color", value -> {
+                ShadowColor color = ShadowColor.fromHexString(value);
+                if (color != null) style.shadowColor(color);
+            });
+        }
 
         for (String decorationKey : TextDecoration.NAMES.keys()) {
             reader.useBoolean(decorationKey, value -> style.decoration(
@@ -401,7 +408,12 @@ public class AdventureNBTSerializer implements ComponentSerializer<Component, Co
         if (font != null) writer.writeUTF("font", font.asString());
 
         TextColor color = style.color();
-        if (color != null) writer.writeUTF("color", serializeColor(color));
+        if (color != null) writer.writeUTF("color", this.serializeColor(color));
+
+        if (BackwardCompatUtil.IS_4_18_0_OR_NEWER) {
+            ShadowColor shadowColor = style.shadowColor();
+            if (shadowColor != null) writer.writeUTF("shadow_color", shadowColor.asHexString());
+        }
 
         for (TextDecoration decoration : TextDecoration.NAMES.values()) {
             TextDecoration.State state = style.decoration(decoration);

@@ -19,6 +19,7 @@
 package com.github.retrooper.packetevents.wrapper.play.server;
 
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.chat.RemoteChatSession;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.GameMode;
@@ -47,9 +48,15 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
         UPDATE_LATENCY,
         UPDATE_DISPLAY_NAME,
         /**
-         * Updates the order in which the player is listed in the tablist.
+         * Updates the order in which the player is listed in the tablist.<br>
+         * Added with 1.21.2
          */
-        UPDATE_LIST_ORDER;
+        UPDATE_LIST_ORDER,
+        /**
+         * Updates whether the outer skin layer (hat) of the player will be shown in tablist.<br>
+         * Added with 1.21.4
+         */
+        UPDATE_HAT;
 
         public static final WrapperPlayServerPlayerInfoUpdate.Action[] VALUES = values();
     }
@@ -63,7 +70,14 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
         private Component displayName;
         @Nullable
         private RemoteChatSession chatSession;
-        private int listOrder; // added in 1.21.2
+        /**
+         * Added with 1.21.2
+         */
+        private int listOrder;
+        /**
+         * Added with 1.21.4
+         */
+        private boolean showHat;
 
         public PlayerInfo(UUID profileId) {
             this(new UserProfile(profileId, ""));
@@ -89,6 +103,16 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
                 @Nullable RemoteChatSession chatSession,
                 int listOrder
         ) {
+            this(profile, listed, latency, gameMode, displayName, chatSession, listOrder, false);
+        }
+
+        public PlayerInfo(
+                UserProfile profile, boolean listed,
+                int latency, GameMode gameMode,
+                @Nullable Component displayName,
+                @Nullable RemoteChatSession chatSession,
+                int listOrder, boolean showHat
+        ) {
             this.profile = profile;
             this.listed = listed;
             this.latency = latency;
@@ -96,6 +120,7 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
             this.displayName = displayName;
             this.chatSession = chatSession;
             this.listOrder = listOrder;
+            this.showHat = showHat;
         }
 
         public UUID getProfileId() {
@@ -126,8 +151,18 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
             return chatSession;
         }
 
+        /**
+         * Added with 1.21.2
+         */
         public int getListOrder() {
             return this.listOrder;
+        }
+
+        /**
+         * Added with 1.21.4
+         */
+        public boolean isShowHat() {
+            return this.showHat;
         }
 
         public void setGameProfile(UserProfile gameProfile) {
@@ -154,8 +189,18 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
             this.chatSession = chatSession;
         }
 
+        /**
+         * Added with 1.21.2
+         */
         public void setListOrder(int listOrder) {
             this.listOrder = listOrder;
+        }
+
+        /**
+         * Added with 1.21.4
+         */
+        public void setShowHat(boolean showHat) {
+            this.showHat = showHat;
         }
     }
 
@@ -196,6 +241,7 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
             @Nullable RemoteChatSession chatSession = null;
             @Nullable Component displayName = null;
             int listOrder = 0;
+            boolean showHat = false;
             for (Action action : actions) {
                 switch (action) {
                     case ADD_PLAYER:
@@ -227,11 +273,18 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
                         displayName = wrapper.readOptional(PacketWrapper::readComponent);
                         break;
                     case UPDATE_LIST_ORDER:
-                        listOrder = wrapper.readVarInt();
+                        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_2)) {
+                            listOrder = wrapper.readVarInt();
+                        }
+                        break;
+                    case UPDATE_HAT:
+                        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_4)) {
+                            showHat = wrapper.readBoolean();
+                        }
                         break;
                 }
             }
-            return new PlayerInfo(gameProfile, listed, latency, gameMode, displayName, chatSession, listOrder);
+            return new PlayerInfo(gameProfile, listed, latency, gameMode, displayName, chatSession, listOrder, showHat);
         });
     }
 
@@ -266,7 +319,14 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
                         wrapper.writeOptional(playerInfo.getDisplayName(), PacketWrapper::writeComponent);
                         break;
                     case UPDATE_LIST_ORDER:
-                        wrapper.writeVarInt(playerInfo.getListOrder());
+                        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_2)) {
+                            wrapper.writeVarInt(playerInfo.getListOrder());
+                        }
+                        break;
+                    case UPDATE_HAT:
+                        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_4)) {
+                            wrapper.writeBoolean(playerInfo.isShowHat());
+                        }
                         break;
                 }
             }

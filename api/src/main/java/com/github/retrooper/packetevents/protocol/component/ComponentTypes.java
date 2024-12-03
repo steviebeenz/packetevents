@@ -34,6 +34,7 @@ import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemBlo
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemConsumable;
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemContainerContents;
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemContainerLoot;
+import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemCustomModelData;
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemDamageResistant;
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemDeathProtection;
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemDyeColor;
@@ -139,8 +140,14 @@ public final class ComponentTypes {
             ItemAdventurePredicate::read, ItemAdventurePredicate::write);
     public static final ComponentType<ItemAttributeModifiers> ATTRIBUTE_MODIFIERS = define("attribute_modifiers",
             ItemAttributeModifiers::read, ItemAttributeModifiers::write);
-    public static final ComponentType<Integer> CUSTOM_MODEL_DATA = define("custom_model_data",
-            PacketWrapper::readVarInt, PacketWrapper::writeVarInt);
+    public static final ComponentType<ItemCustomModelData> CUSTOM_MODEL_DATA_LISTS = define("custom_model_data",
+            ItemCustomModelData::read, ItemCustomModelData::write);
+    /**
+     * Rewritten in 1.21.4
+     */
+    @Deprecated
+    public static final ComponentType<Integer> CUSTOM_MODEL_DATA = CUSTOM_MODEL_DATA_LISTS.legacyMap(
+            ItemCustomModelData::getLegacyId, ItemCustomModelData::new);
     public static final ComponentType<Dummy> HIDE_ADDITIONAL_TOOLTIP = define("hide_additional_tooltip",
             Dummy::dummyRead, Dummy::dummyWrite);
     public static final ComponentType<Dummy> HIDE_TOOLTIP = define("hide_tooltip",

@@ -23,8 +23,8 @@ public class MappingIntegrityTest extends BaseDummyAPITest {
     @Test
     @DisplayName("Test attribute mapping")
     public void testAttributeMapping() {
-        assertEquals(11, Attributes.GENERIC_GRAVITY.getId(ClientVersion.V_1_20_5));
-        assertEquals(1, Attributes.GENERIC_FOLLOW_RANGE.getId(ClientVersion.V_1_20_2));
+        assertEquals(11, Attributes.GRAVITY.getId(ClientVersion.V_1_20_5));
+        assertEquals(1, Attributes.FOLLOW_RANGE.getId(ClientVersion.V_1_20_2));
     }
 
     @Test

@@ -29,8 +29,10 @@ import com.github.retrooper.packetevents.protocol.nbt.NBTString;
 import com.github.retrooper.packetevents.protocol.particle.Particle;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.sound.Sound;
+import com.github.retrooper.packetevents.util.RandomWeightedList;
 import net.kyori.adventure.util.Index;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -38,6 +40,8 @@ import java.util.OptionalInt;
 import static com.github.retrooper.packetevents.util.adventure.AdventureIndexUtil.indexValueOrThrow;
 
 public class BiomeEffects {
+
+    private static final float FALLBACK_MUSIC_VOLUME = 1f;
 
     private final int fogColor;
     private final int waterColor;
@@ -50,7 +54,8 @@ public class BiomeEffects {
     private final Optional<Sound> ambientSound;
     private final Optional<MoodSettings> moodSound;
     private final Optional<AdditionsSettings> additionsSound;
-    private final Optional<MusicSettings> music;
+    private final RandomWeightedList<MusicSettings> music;
+    private final float musicVolume;
 
     public BiomeEffects(
             int fogColor, int waterColor, int waterFogColor, int skyColor,
@@ -61,6 +66,25 @@ public class BiomeEffects {
             Optional<MoodSettings> moodSound,
             Optional<AdditionsSettings> additionsSound,
             Optional<MusicSettings> music
+    ) {
+        this(fogColor, waterColor, waterFogColor, skyColor, foliageColor, grassColor,
+                grassColorModifier, particle, ambientSound, moodSound, additionsSound,
+                music.map(musicSettings ->
+                                new RandomWeightedList<>(musicSettings, 1))
+                        .orElseGet(RandomWeightedList::new),
+                FALLBACK_MUSIC_VOLUME);
+    }
+
+    public BiomeEffects(
+            int fogColor, int waterColor, int waterFogColor, int skyColor,
+            OptionalInt foliageColor, OptionalInt grassColor,
+            GrassColorModifier grassColorModifier,
+            Optional<ParticleSettings> particle,
+            Optional<Sound> ambientSound,
+            Optional<MoodSettings> moodSound,
+            Optional<AdditionsSettings> additionsSound,
+            RandomWeightedList<MusicSettings> music,
+            float musicVolume
     ) {
         this.fogColor = fogColor;
         this.waterColor = waterColor;
@@ -74,6 +98,7 @@ public class BiomeEffects {
         this.moodSound = moodSound;
         this.additionsSound = additionsSound;
         this.music = music;
+        this.musicVolume = musicVolume;
     }
 
     public static BiomeEffects decode(NBT nbt, ClientVersion version) {
@@ -96,10 +121,23 @@ public class BiomeEffects {
                 .map(tag -> MoodSettings.decode(tag, version));
         Optional<AdditionsSettings> additionsSound = Optional.ofNullable(compound.getTagOrNull("additions_sound"))
                 .map(tag -> AdditionsSettings.decode(tag, version));
-        Optional<MusicSettings> music = Optional.ofNullable(compound.getTagOrNull("music"))
-                .map(tag -> MusicSettings.decode(tag, version));
+
+        NBT musicTag = compound.getTagOrNull("music");
+        RandomWeightedList<MusicSettings> music = musicTag == null ? new RandomWeightedList<>() : null;
+        float musicVolume = FALLBACK_MUSIC_VOLUME;
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_21_4)) {
+            NBTNumber musicVolumeTag = compound.getNumberTagOrNull("music_volume");
+            if (musicVolumeTag != null) {
+                musicVolume = musicVolumeTag.getAsFloat();
+            }
+            if (musicTag != null) {
+                music = RandomWeightedList.decode(musicTag, version, MusicSettings::decode);
+            }
+        } else {
+            music = new RandomWeightedList<>(MusicSettings.decode(musicTag, version), 1);
+        }
         return new BiomeEffects(fogColor, waterColor, waterFogColor, skyColor, foliageColor, grassColor,
-                grassColorModifier, particle, ambientSound, moodSound, additionsSound, music);
+                grassColorModifier, particle, ambientSound, moodSound, additionsSound, music, musicVolume);
     }
 
     public static NBT encode(BiomeEffects effects, ClientVersion version) {
@@ -123,8 +161,16 @@ public class BiomeEffects {
                 "mood_sound", MoodSettings.encode(sound, version)));
         effects.additionsSound.ifPresent(sound -> compound.setTag(
                 "additions_sound", AdditionsSettings.encode(sound, version)));
-        effects.music.ifPresent(music -> compound.setTag(
-                "music", MusicSettings.encode(music, version)));
+
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_21_4)) {
+            compound.setTag("music_volume", new NBTFloat(effects.musicVolume));
+            compound.setTag("music", RandomWeightedList.encode(effects.music, version, MusicSettings::encode));
+        } else {
+            List<RandomWeightedList.Entry<MusicSettings>> entries = effects.music.getEntries();
+            if (!entries.isEmpty()) {
+                compound.setTag("music", MusicSettings.encode(entries.get(0).getData(), version));
+            }
+        }
         return compound;
     }
 
@@ -168,8 +214,16 @@ public class BiomeEffects {
         return this.moodSound;
     }
 
-    public Optional<MusicSettings> getMusic() {
+    public RandomWeightedList<MusicSettings> getMusics() {
         return this.music;
+    }
+
+    public Optional<MusicSettings> getMusic() {
+        List<RandomWeightedList.Entry<MusicSettings>> entries = this.music.getEntries();
+        if (entries.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(entries.get(0).getData());
     }
 
     public Optional<AdditionsSettings> getAdditionsSound() {
