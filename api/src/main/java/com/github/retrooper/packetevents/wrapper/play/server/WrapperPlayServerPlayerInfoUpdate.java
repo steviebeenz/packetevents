@@ -49,12 +49,12 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
         UPDATE_DISPLAY_NAME,
         /**
          * Updates the order in which the player is listed in the tablist.<br>
-         * Added with 1.21.2.
+         * Added with 1.21.2
          */
         UPDATE_LIST_ORDER,
         /**
-         * Updates wether the outer skin layer (hat) of the player will be shown in tablist.<br>
-         * Added with 1.21.5.
+         * Updates whether the outer skin layer (hat) of the player will be shown in tablist.<br>
+         * Added with 1.21.4
          */
         UPDATE_HAT;
 
@@ -75,7 +75,7 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
          */
         private int listOrder;
         /**
-         * Added with 1.21.5
+         * Added with 1.21.4
          */
         private boolean showHat;
 
@@ -159,7 +159,7 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
         }
 
         /**
-         * Added with 1.21.5
+         * Added with 1.21.4
          */
         public boolean isShowHat() {
             return this.showHat;
@@ -197,7 +197,7 @@ public class WrapperPlayServerPlayerInfoUpdate extends PacketWrapper<WrapperPlay
         }
 
         /**
-         * Added with 1.21.5
+         * Added with 1.21.4
          */
         public void setShowHat(boolean showHat) {
             this.showHat = showHat;
