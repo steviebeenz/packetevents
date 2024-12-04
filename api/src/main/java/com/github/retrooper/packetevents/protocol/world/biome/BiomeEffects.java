@@ -133,7 +133,7 @@ public class BiomeEffects {
             if (musicTag != null) {
                 music = RandomWeightedList.decode(musicTag, version, MusicSettings::decode);
             }
-        } else {
+        } else if (musicTag != null) {
             music = new RandomWeightedList<>(MusicSettings.decode(musicTag, version), 1);
         }
         return new BiomeEffects(fogColor, waterColor, waterFogColor, skyColor, foliageColor, grassColor,
