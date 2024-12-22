@@ -1725,7 +1725,7 @@
     "villager": 120,
     "end_crystal": 200
   },
-  "V_1_10": {
+  "V_1_8": {
     "item": 1,
     "experience_orb": 2,
     "leash_knot": 8,
@@ -1742,7 +1742,6 @@
     "tnt": 20,
     "falling_block": 21,
     "firework_rocket": 22,
-    "tipped_arrow": 23,
     "spectral_arrow": 24,
     "shulker_bullet": 25,
     "dragon_fireball": 26,
@@ -1757,8 +1756,6 @@
     "spawner_minecart": 47,
     "creeper": 50,
     "skeleton": 51,
-    "stray": 51,
-    "husk": 51,
     "spider": 52,
     "giant": 53,
     "zombie": 54,
