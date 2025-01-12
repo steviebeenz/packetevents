@@ -19,17 +19,31 @@
 package com.github.retrooper.packetevents.protocol.recipe;
 
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.github.retrooper.packetevents.wrapper.PacketWrapper;
+import org.jetbrains.annotations.ApiStatus;
 
-// From MCProtocolLib
+/**
+ * <strong>WARNING:</strong> No longer exists since 1.21.2, network recipe data was rewritten.
+ */
+@ApiStatus.Obsolete
 public class Ingredient {
-    private final @NotNull ItemStack[] options;
 
-    public Ingredient(@NotNull ItemStack... options) {
+    private final ItemStack[] options;
+
+    public Ingredient(ItemStack... options) {
         this.options = options;
     }
 
-    public @NotNull ItemStack[] getOptions() {
-        return options;
+    public static Ingredient read(PacketWrapper<?> wrapper) {
+        ItemStack[] options = wrapper.readArray(PacketWrapper::readItemStack, ItemStack.class);
+        return new Ingredient(options);
+    }
+
+    public static void write(PacketWrapper<?> wrapper, Ingredient ingredient) {
+        wrapper.writeArray(ingredient.options, PacketWrapper::writeItemStack);
+    }
+
+    public ItemStack[] getOptions() {
+        return this.options;
     }
 }

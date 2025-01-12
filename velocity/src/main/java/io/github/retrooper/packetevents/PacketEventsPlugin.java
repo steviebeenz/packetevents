@@ -26,39 +26,42 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import io.github.retrooper.packetevents.bstats.Metrics;
 import io.github.retrooper.packetevents.velocity.factory.VelocityPacketEventsBuilder;
+import org.bstats.charts.SimplePie;
+import org.bstats.velocity.Metrics;
+import org.slf4j.Logger;
 
-import java.util.logging.Logger;
+import java.nio.file.Path;
 
-@Plugin(id = "packetevents", name = "PacketEvents", version = "2.2.0") //TODO UPDATE
 public class PacketEventsPlugin {
     private final ProxyServer server;
     private final Logger logger;
     private final PluginContainer pluginContainer;
-    public final Metrics.Factory metricsFactory;
+    private final Path dataDirectory;
+    private final Metrics.Factory metricsFactory;
 
     @Inject
-    public PacketEventsPlugin(final ProxyServer server,
-                              final Logger logger,
-                              final PluginContainer pluginContainer, final Metrics.Factory metricsFactory) {
+    public PacketEventsPlugin(
+            final ProxyServer server,
+            final Logger logger,
+            final PluginContainer pluginContainer,
+            @DataDirectory Path dataDirectory,
+            Metrics.Factory metricsFactory) {
         this.server = server;
         this.logger = logger;
         this.pluginContainer = pluginContainer;
+        this.dataDirectory = dataDirectory;
         this.metricsFactory = metricsFactory;
-        logger.info("Plugin started");
-
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
         logger.info("Injecting packetevents...");
-        PacketEvents.setAPI(VelocityPacketEventsBuilder.build(server, pluginContainer));
+        PacketEvents.setAPI(VelocityPacketEventsBuilder.build(server, pluginContainer, logger, dataDirectory));
         PacketEvents.getAPI().load();
-        PacketEvents.getAPI().getSettings().reEncodeByDefault(false);
         // It should only be enabled in a development environment, not globally
         // PacketEvents.getAPI().getSettings().debug(true);
         PacketListenerAbstract listener = new PacketListenerAbstract() {
@@ -89,6 +92,13 @@ public class PacketEventsPlugin {
         };
         //PacketEvents.getAPI().getEventManager().registerListener(listener);
         PacketEvents.getAPI().init();
+
+        // Enable bStats
+        Metrics metrics = metricsFactory.make(this, 11327);
+        //Just to have an idea of which versions of packetevents people use
+        metrics.addCustomChart(new SimplePie("packetevents_version", () -> PacketEvents.getAPI().getVersion().toStringWithoutSnapshot()));
+
+        logger.info("Plugin started");
     }
 
     @Subscribe

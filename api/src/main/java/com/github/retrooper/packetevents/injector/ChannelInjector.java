@@ -18,9 +18,11 @@
 
 package com.github.retrooper.packetevents.injector;
 
+import com.github.retrooper.packetevents.protocol.PacketSide;
 import com.github.retrooper.packetevents.protocol.player.User;
 
 public interface ChannelInjector {
+
     default boolean isServerBound() {
         return true;
     }
@@ -34,4 +36,8 @@ public interface ChannelInjector {
     void setPlayer(Object channel, Object player);
 
     boolean isProxy();
+
+    default PacketSide getPacketSide() {
+        return PacketSide.SERVER;
+    }
 }

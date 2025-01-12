@@ -18,9 +18,8 @@
 
 package io.github.retrooper.packetevents.util.viaversion;
 
+import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.User;
-import com.github.retrooper.packetevents.util.reflection.Reflection;
-import io.netty.channel.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -33,12 +32,13 @@ public class ViaVersionUtil {
 
     private static void load() {
         if (viaVersionAccessor == null) {
+            ClassLoader classLoader = PacketEvents.getAPI().getPlugin().getClass().getClassLoader();
             try {
-                Class.forName("com.viaversion.viaversion.api.Via");
+                classLoader.loadClass("com.viaversion.viaversion.api.Via");
                 viaVersionAccessor = new ViaVersionAccessorImpl();
             } catch (Exception e) {
                 try {
-                    Class.forName("us.myles.ViaVersion.api.Via");
+                    classLoader.loadClass("us.myles.ViaVersion.api.Via");
                     viaVersionAccessor = new ViaVersionAccessorImplLegacy();
                 } catch (ClassNotFoundException ex) {
                     viaVersionAccessor = null;
@@ -65,23 +65,7 @@ public class ViaVersionUtil {
     }
 
     public static int getProtocolVersion(User user) {
-        try {
-            if (user.getUUID() != null) {
-                Player player = Bukkit.getPlayer(user.getUUID());
-                if (player != null) {
-                    int version = getProtocolVersion(player);
-                    // -1 means via hasn't gotten join event yet
-                    if (version != -1) return version;
-                }
-            }
-            Object viaEncoder = ((Channel) user.getChannel()).pipeline().get("via-encoder");
-            Object connection = Reflection.getField(viaEncoder.getClass(), "connection").get(viaEncoder);
-            Object protocolInfo = Reflection.getField(connection.getClass(), "protocolInfo").get(connection);
-            return (int) Reflection.getField(protocolInfo.getClass(), "protocolVersion").get(protocolInfo);
-        } catch (Exception e) {
-            System.out.println("Unable to grab ViaVersion client version for player!");
-            return -1;
-        }
+        return getViaVersionAccessor().getProtocolVersion(user);
     }
 
     public static int getProtocolVersion(Player player) {

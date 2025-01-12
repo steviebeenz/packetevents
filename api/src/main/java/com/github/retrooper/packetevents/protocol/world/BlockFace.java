@@ -85,11 +85,11 @@ public enum BlockFace {
 
     public static BlockFace getLegacyBlockFaceByValue(int face) {
         if (face == 255) return OTHER;
-        return VALUES[face % VALUES.length];
+        return CARTESIAN_VALUES[face % CARTESIAN_VALUES.length];
     }
 
     public static BlockFace getBlockFaceByValue(int face) {
-        return VALUES[face % VALUES.length];
+        return CARTESIAN_VALUES[face % CARTESIAN_VALUES.length];
     }
 
     public int getModX() {
@@ -150,6 +150,33 @@ public enum BlockFace {
                 return SOUTH;
             default:
                 return OTHER;
+        }
+    }
+
+    /**
+     * Returns an integer representing cardinal directions with south as the starting index at 0. UP and DOWN return -1
+     * <p>
+     * Used by Mojang for calculations involving mob AI, decorations, paintings, item frames, maps,
+     * structure generation, campfires, stairs, connecting blocks, and flowerbeds.
+     * Also used for getting directions and block faces as rotations.
+     *
+     * @return integer horizontal id
+     */
+    public int getHorizontalId() {
+        switch (this) {
+            case DOWN:
+            case UP:
+                return -1;
+            case NORTH:
+                return 2;
+            case SOUTH:
+                return 0;
+            case WEST:
+                return 1;
+            case EAST:
+                return 3;
+            default:
+                throw new IllegalArgumentException("Invalid block face input for getHorizontalId");
         }
     }
 

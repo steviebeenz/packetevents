@@ -16,6 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+/*
+ * MIT License
+
+ * Copyright (c) 2021 Andrew Steinborn
+
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.github.retrooper.packetevents.wrapper;
 
 import com.github.retrooper.packetevents.PacketEvents;
@@ -25,7 +49,6 @@ import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.manager.server.VersionComparison;
 import com.github.retrooper.packetevents.netty.buffer.ByteBufHelper;
-import com.github.retrooper.packetevents.netty.buffer.ByteBufOutputStream;
 import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.PacketSide;
 import com.github.retrooper.packetevents.protocol.chat.ChatType;
@@ -34,11 +57,14 @@ import com.github.retrooper.packetevents.protocol.chat.LastSeenMessages;
 import com.github.retrooper.packetevents.protocol.chat.MessageSignature;
 import com.github.retrooper.packetevents.protocol.chat.Node;
 import com.github.retrooper.packetevents.protocol.chat.Parsers;
+import com.github.retrooper.packetevents.protocol.chat.Parsers.Parser;
 import com.github.retrooper.packetevents.protocol.chat.RemoteChatSession;
 import com.github.retrooper.packetevents.protocol.chat.SignedCommandArgument;
 import com.github.retrooper.packetevents.protocol.chat.filter.FilterMask;
 import com.github.retrooper.packetevents.protocol.chat.filter.FilterMaskType;
-import com.github.retrooper.packetevents.protocol.chat.message.ChatMessage_v1_19_1;
+import com.github.retrooper.packetevents.protocol.component.ComponentType;
+import com.github.retrooper.packetevents.protocol.component.ComponentTypes;
+import com.github.retrooper.packetevents.protocol.component.PatchableComponentMap;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataType;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
@@ -47,8 +73,10 @@ import com.github.retrooper.packetevents.protocol.entity.villager.VillagerData;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
+import com.github.retrooper.packetevents.protocol.mapper.MappedEntity;
 import com.github.retrooper.packetevents.protocol.nbt.NBT;
 import com.github.retrooper.packetevents.protocol.nbt.NBTCompound;
+import com.github.retrooper.packetevents.protocol.nbt.NBTLimiter;
 import com.github.retrooper.packetevents.protocol.nbt.codec.NBTCodec;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
@@ -56,24 +84,30 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.player.PublicProfileKey;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.protocol.recipe.data.MerchantItemCost;
 import com.github.retrooper.packetevents.protocol.recipe.data.MerchantOffer;
 import com.github.retrooper.packetevents.protocol.world.Dimension;
 import com.github.retrooper.packetevents.protocol.world.WorldBlockPosition;
 import com.github.retrooper.packetevents.resources.ResourceLocation;
+import com.github.retrooper.packetevents.util.KnownPack;
+import com.github.retrooper.packetevents.util.MathUtil;
 import com.github.retrooper.packetevents.util.StringUtil;
 import com.github.retrooper.packetevents.util.Vector3i;
-import com.github.retrooper.packetevents.util.adventure.AdventureNBTSerialization;
 import com.github.retrooper.packetevents.util.adventure.AdventureSerializer;
 import com.github.retrooper.packetevents.util.crypto.MinecraftEncryptionUtil;
 import com.github.retrooper.packetevents.util.crypto.SaltSignature;
 import com.github.retrooper.packetevents.util.crypto.SignatureData;
+import com.github.retrooper.packetevents.util.mappings.GlobalRegistryHolder;
+import com.github.retrooper.packetevents.util.mappings.IRegistry;
+import com.github.retrooper.packetevents.util.mappings.IRegistryHolder;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.time.Instant;
@@ -85,14 +119,19 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-public class PacketWrapper<T extends PacketWrapper> {
+public class PacketWrapper<T extends PacketWrapper<T>> {
     @Nullable
     public Object buffer;
+
+    @ApiStatus.Internal
+    public final Object bufferLock = new Object();
 
     protected ClientVersion clientVersion;
     protected ServerVersion serverVersion;
@@ -185,7 +224,7 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     @ApiStatus.Internal
-    public final void prepareForSend(Object channel, boolean outgoing) {
+    public final void prepareForSend(Object channel, boolean outgoing, boolean proxy) {
         // Null means the packet was manually created and wasn't sent by the server itself
         // A reference count of 0 means that the packet was freed (it was already sent)
         if (buffer == null || ByteBufHelper.refCnt(buffer) == 0) {
@@ -193,7 +232,7 @@ public class PacketWrapper<T extends PacketWrapper> {
         }
 
         //On proxies, we must rewrite the packet ID in a format compatible for the targeted client version
-        if (PacketEvents.getAPI().getInjector().isProxy()) {
+        if (proxy) {
             User user = PacketEvents.getAPI().getProtocolManager().getUser(channel);
             if (packetTypeData.getPacketType() == null) {
                 //Get the packet type with the local version packet type mappings.
@@ -208,6 +247,11 @@ public class PacketWrapper<T extends PacketWrapper> {
             writeVarInt(packetTypeData.getNativePacketId());
         }
         write();
+    }
+
+    @ApiStatus.Internal
+    public final void prepareForSend(Object channel, boolean outgoing) {
+        prepareForSend(channel, outgoing, PacketEvents.getAPI().getInjector().isProxy());
     }
 
     public void read() {
@@ -225,7 +269,7 @@ public class PacketWrapper<T extends PacketWrapper> {
     //TODO public void transform(int protocolVersion) {}
     //Current idea change server version, but still think more
 
-    public final void readEvent(ProtocolPacketEvent<?> event) {
+    public final void readEvent(ProtocolPacketEvent event) {
         PacketWrapper<?> last = event.getLastUsedWrapper();
         if (last != null) {
             copy((T) last);
@@ -255,6 +299,9 @@ public class PacketWrapper<T extends PacketWrapper> {
         return buffer;
     }
 
+    public void setBuffer(Object buffer) {
+        this.buffer = buffer;
+    }
 
     /**
      * Gets the Packet ID for the current platform version
@@ -331,6 +378,14 @@ public class PacketWrapper<T extends PacketWrapper> {
         ByteBufHelper.writeInt(buffer, value);
     }
 
+    public int readMedium() {
+        return ByteBufHelper.readMedium(buffer);
+    }
+
+    public void writeMedium(int value) {
+        ByteBufHelper.writeMedium(buffer, value);
+    }
+
     public int readVarInt() {
         int value = 0;
         int length = 0;
@@ -347,13 +402,27 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public void writeVarInt(int value) {
-        while (true) {
-            if ((value & ~0x7F) == 0) {
-                writeByte(value);
-                break;
-            }
-            writeByte((value & 0x7F) | 0x80);
-            value >>>= 7;
+        /* Got this code/optimization from https://steinborn.me/posts/performance/how-fast-can-you-write-a-varint/
+         * Copyright and permission notice above (above the class).
+         * Steinborn's post says that the code is under the MIT, last accessed 29.06.2024.
+         */
+        if ((value & (0xFFFFFFFF << 7)) == 0) {
+            writeByte(value);
+        } else if ((value & (0xFFFFFFFF << 14)) == 0) {
+            int w = (value & 0x7F | 0x80) << 8 | (value >>> 7);
+            writeShort(w);
+        } else if ((value & (0xFFFFFFFF << 21)) == 0) {
+            int w = (value & 0x7F | 0x80) << 16 | ((value >>> 7) & 0x7F | 0x80) << 8 | (value >>> 14);
+            writeMedium(w);
+        } else if ((value & (0xFFFFFFFF << 28)) == 0) {
+            int w = (value & 0x7F | 0x80) << 24 | (((value >>> 7) & 0x7F | 0x80) << 16)
+                    | ((value >>> 14) & 0x7F | 0x80) << 8 | (value >>> 21);
+            writeInt(w);
+        } else {
+            int w = (value & 0x7F | 0x80) << 24 | ((value >>> 7) & 0x7F | 0x80) << 16
+                    | ((value >>> 14) & 0x7F | 0x80) << 8 | ((value >>> 21) & 0x7F | 0x80);
+            writeInt(w);
+            writeByte(value >>> 28);
         }
     }
 
@@ -391,8 +460,48 @@ public class PacketWrapper<T extends PacketWrapper> {
         writeVarInt(data.getLevel());
     }
 
-    @NotNull
-    public ItemStack readItemStack() {
+    // item stack serialization was basically completely rewritten in 1.20.5
+    @SuppressWarnings("unchecked")
+    public ItemStack readItemStackModern() {
+        int count = this.readVarInt();
+        if (count <= 0) {
+            return ItemStack.EMPTY;
+        }
+        ItemType itemType = this.readMappedEntity(ItemTypes.getRegistry());
+
+        // read component patch counts
+        int presentCount = this.readVarInt();
+        int absentCount = this.readVarInt();
+        if (presentCount == 0 && absentCount == 0) {
+            return ItemStack.builder().type(itemType).amount(count).build();
+        }
+
+        PatchableComponentMap components = new PatchableComponentMap(
+                itemType.getComponents(), new HashMap<>(4));
+        for (int i = 0; i < presentCount; i++) {
+            ComponentType<?> type = this.readMappedEntity(ComponentTypes.getRegistry());
+            components.set((ComponentType<Object>) type, type.read(this));
+        }
+        for (int i = 0; i < absentCount; i++) {
+            components.unset(this.readMappedEntity(ComponentTypes.getRegistry()));
+        }
+
+        return ItemStack.builder().type(itemType).amount(count).components(components).build();
+    }
+
+    public ItemStack readPresentItemStack() {
+        ItemStack itemStack = this.readItemStack();
+        if (itemStack.isEmpty()) {
+            throw new RuntimeException("Empty ItemStack not allowed");
+        }
+        return itemStack;
+    }
+
+    public @NotNull ItemStack readItemStack() {
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+            return this.readItemStackModern();
+        }
+
         boolean v1_13_2 = serverVersion.isNewerThanOrEquals(ServerVersion.V_1_13_2);
         if (v1_13_2) {
             if (!readBoolean()) {
@@ -415,10 +524,67 @@ public class PacketWrapper<T extends PacketWrapper> {
                 .build();
     }
 
+    // item stack serialization was basically completely rewritten in 1.20.5
+    @SuppressWarnings("unchecked")
+    public void writeItemStackModern(ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            this.writeByte(0);
+            return;
+        }
+        this.writeVarInt(itemStack.getAmount());
+        this.writeMappedEntity(itemStack.getType());
+
+        if (!itemStack.hasComponentPatches()) {
+            this.writeShort(0);
+            return; // early return
+        }
+
+        // write component patch counts
+        Map<ComponentType<?>, Optional<?>> allPatches = itemStack.getComponents().getPatches();
+        int presentCount = 0, absentCount = 0;
+        for (Map.Entry<ComponentType<?>, Optional<?>> patch : allPatches.entrySet()) {
+            if (patch.getValue().isPresent()) {
+                presentCount++;
+            } else {
+                absentCount++;
+            }
+        }
+        this.writeVarInt(presentCount);
+        this.writeVarInt(absentCount);
+
+        // write present patches
+        for (Map.Entry<ComponentType<?>, Optional<?>> patch : allPatches.entrySet()) {
+            if (patch.getValue().isPresent()) {
+                this.writeVarInt(patch.getKey().getId(this.serverVersion.toClientVersion()));
+                ((ComponentType<Object>) patch.getKey()).write(this, patch.getValue().get());
+            }
+        }
+
+        // write absent patches
+        for (Map.Entry<ComponentType<?>, Optional<?>> patch : allPatches.entrySet()) {
+            if (!patch.getValue().isPresent()) {
+                this.writeVarInt(patch.getKey().getId(this.serverVersion.toClientVersion()));
+            }
+        }
+    }
+
+    public void writePresentItemStack(ItemStack itemStack) {
+        if (itemStack == null || itemStack.isEmpty()) {
+            throw new RuntimeException("Empty ItemStack not allowed");
+        }
+        this.writeItemStack(itemStack);
+    }
+
     public void writeItemStack(ItemStack itemStack) {
         if (itemStack == null) {
             itemStack = ItemStack.EMPTY;
         }
+
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+            this.writeItemStackModern(itemStack);
+            return;
+        }
+
         boolean v1_13_2 = serverVersion.isNewerThanOrEquals(ServerVersion.V_1_13_2);
         if (v1_13_2) {
             if (itemStack.isEmpty()) {
@@ -444,18 +610,26 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public NBTCompound readNBT() {
-        return (NBTCompound) this.readDirectNBT();
+        return (NBTCompound) this.readNBTRaw();
     }
 
-    public NBT readDirectNBT() {
+    public NBT readNBTRaw() {
         return NBTCodec.readNBTFromBuffer(buffer, serverVersion);
     }
 
-    public void writeNBT(NBTCompound nbt) {
-        this.writeDirectNBT((NBT) nbt);
+    public NBTCompound readUnlimitedNBT() {
+        return (NBTCompound) this.readUnlimitedNBTRaw();
     }
 
-    public void writeDirectNBT(NBT nbt) {
+    public NBT readUnlimitedNBTRaw() {
+        return NBTCodec.readNBTFromBuffer(buffer, serverVersion, NBTLimiter.noop());
+    }
+
+    public void writeNBT(NBTCompound nbt) {
+        this.writeNBTRaw(nbt);
+    }
+
+    public void writeNBTRaw(NBT nbt) {
         NBTCodec.writeNBTToBuffer(buffer, serverVersion, nbt);
     }
 
@@ -520,11 +694,7 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public Component readComponentAsNBT() {
-        try {
-            return AdventureNBTSerialization.readComponent(this.buffer);
-        } catch (IOException exception) {
-            throw new IllegalStateException(exception);
-        }
+        return AdventureSerializer.fromNbt(readNBTRaw());
     }
 
     public Component readComponentAsJSON() {
@@ -541,16 +711,20 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public void writeComponentAsNBT(Component component) {
-        try {
-            AdventureNBTSerialization.writeComponent(new ByteBufOutputStream(this.buffer), component);
-        } catch (IOException exception) {
-            throw new IllegalStateException(exception);
-        }
+        writeNBTRaw(AdventureSerializer.toNbt(component));
     }
 
     public void writeComponentAsJSON(Component component) {
         String jsonString = AdventureSerializer.toJson(component);
         this.writeString(jsonString, this.getMaxMessageLength());
+    }
+
+    public Style readStyle() {
+        return AdventureSerializer.getNBTSerializer().deserializeStyle(readNBT());
+    }
+
+    public void writeStyle(Style style) {
+        writeNBT(AdventureSerializer.getNBTSerializer().serializeStyle(style));
     }
 
     public ResourceLocation readIdentifier(int maxLen) {
@@ -841,8 +1015,13 @@ public class PacketWrapper<T extends PacketWrapper> {
         writeEntityMetadata(metadata.entityData(serverVersion.toClientVersion()));
     }
 
+    @Deprecated
     public Dimension readDimension() {
-        if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)) {
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+            return new Dimension(this.readVarInt());
+        }
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)
+                || this.serverVersion.isOlderThan(ServerVersion.V_1_16_2)) {
             Dimension dimension = new Dimension(new NBTCompound());
             dimension.setDimensionName(readIdentifier().toString());
             return dimension;
@@ -851,10 +1030,14 @@ public class PacketWrapper<T extends PacketWrapper> {
         }
     }
 
+    @Deprecated
     public void writeDimension(Dimension dimension) {
-        boolean v1_19 = serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19);
-        boolean v1_16_2 = serverVersion.isNewerThanOrEquals(ServerVersion.V_1_16_2);
-        if (v1_19 || !v1_16_2) {
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+            this.writeVarInt(dimension.getId());
+            return;
+        }
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)
+                || this.serverVersion.isOlderThan(ServerVersion.V_1_16_2)) {
             writeString(dimension.getDimensionName(), 32767);
         } else {
             writeNBT(dimension.getAttributes());
@@ -990,6 +1173,16 @@ public class PacketWrapper<T extends PacketWrapper> {
         writeOptional(legacyUpdate.getLastReceived(), PacketWrapper::writeLastMessagesEntry);
     }
 
+    public MessageSignature readMessageSignature() {
+        if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19_3)) return new MessageSignature(readBytes(256));
+        else return new MessageSignature(readByteArray());
+    }
+
+    public void writeMessageSignature(MessageSignature messageSignature) {
+        writeBytes(messageSignature.getBytes());
+    }
+
+
     public MessageSignature.Packed readMessageSignaturePacked() {
         int id = readVarInt() - 1;
         if (id == -1) {
@@ -1025,13 +1218,13 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public List<SignedCommandArgument> readSignedCommandArguments() {
-        return readCollection(ArrayList::new, (_packet) -> new SignedCommandArgument(readString(), readByteArray()));
+        return readCollection(limitValue(ArrayList::new, 8), (_packet) -> new SignedCommandArgument(readString(16), readMessageSignature()));
     }
 
     public void writeSignedCommandArguments(List<SignedCommandArgument> signedArguments) {
         writeCollection(signedArguments, (_packet, argument) -> {
-            writeString(argument.getArgument());
-            writeByteArray(argument.getSignature());
+            writeString(argument.getArgument(), 16);
+            writeMessageSignature(argument.getSignature());
         });
     }
 
@@ -1065,9 +1258,11 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public MerchantOffer readMerchantOffer() {
-        ItemStack buyItemPrimary = readItemStack();
-        ItemStack sellItem = readItemStack();
-        ItemStack buyItemSecondary = readOptional(PacketWrapper::readItemStack);
+        ItemStack buyItemPrimary = MerchantItemCost.readItem(this);
+        ItemStack sellItem = this.readItemStack();
+        ItemStack buyItemSecondary = this.getServerVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5)
+                || this.getServerVersion().isOlderThan(ServerVersion.V_1_19)
+                ? this.readOptional(MerchantItemCost::readItem) : this.readItemStack();
         boolean tradeDisabled = readBoolean();
         int uses = readInt();
         int maxUses = readInt();
@@ -1075,7 +1270,8 @@ public class PacketWrapper<T extends PacketWrapper> {
         int specialPrice = readInt();
         float priceMultiplier = readFloat();
         int demand = readInt();
-        MerchantOffer data = MerchantOffer.of(buyItemPrimary, buyItemSecondary, sellItem, uses, maxUses, xp, specialPrice, priceMultiplier, demand);
+        MerchantOffer data = MerchantOffer.of(buyItemPrimary, buyItemSecondary,
+                sellItem, uses, maxUses, xp, specialPrice, priceMultiplier, demand);
         if (tradeDisabled) {
             data.setUses(data.getMaxUses());
         }
@@ -1083,14 +1279,20 @@ public class PacketWrapper<T extends PacketWrapper> {
     }
 
     public void writeMerchantOffer(MerchantOffer data) {
-        writeItemStack(data.getFirstInputItem());
-        writeItemStack(data.getOutputItem());
+        MerchantItemCost.writeItem(this, data.getFirstInputItem());
+        this.writeItemStack(data.getOutputItem());
         ItemStack buyItemSecondary = data.getSecondInputItem();
-        //In this case writing empty itemstacks is just as good as writing nothing according to vanilla server code
+        // in this case writing empty itemstacks is just
+        // as good as writing nothing according to vanilla server code
         if (buyItemSecondary != null && buyItemSecondary.isEmpty()) {
             buyItemSecondary = null;
         }
-        writeOptional(buyItemSecondary, PacketWrapper::writeItemStack);
+        if (this.getServerVersion().isNewerThanOrEquals(ServerVersion.V_1_20_5)
+                || this.getServerVersion().isOlderThan(ServerVersion.V_1_19)) {
+            this.writeOptional(buyItemSecondary, MerchantItemCost::writeItem);
+        } else {
+            this.writeItemStack(buyItemSecondary);
+        }
         writeBoolean(data.getUses() >= data.getMaxUses());
         writeInt(data.getUses());
         writeInt(data.getMaxUses());
@@ -1100,46 +1302,80 @@ public class PacketWrapper<T extends PacketWrapper> {
         writeInt(data.getDemand());
     }
 
-    public ChatMessage_v1_19_1.ChatTypeBoundNetwork readChatTypeBoundNetwork() {
-        int id = readVarInt();
-        ChatType type = ChatTypes.getById(getServerVersion().toClientVersion(), id);
+    public ChatType.Bound readChatTypeBoundNetwork() {
+        ChatType type = this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21)
+                ? this.readMappedEntityOrDirect(ChatTypes.getRegistry(), ChatType::readDirect)
+                : this.readMappedEntity(ChatTypes.getRegistry());
         Component name = readComponent();
         Component targetName = readOptional(PacketWrapper::readComponent);
-        return new ChatMessage_v1_19_1.ChatTypeBoundNetwork(type, name, targetName);
+        return new ChatType.Bound(type, name, targetName);
     }
 
-    public void writeChatTypeBoundNetwork(ChatMessage_v1_19_1.ChatTypeBoundNetwork chatType) {
-        writeVarInt(chatType.getType().getId(getServerVersion().toClientVersion()));
-        writeComponent(chatType.getName());
-        writeOptional(chatType.getTargetName(), PacketWrapper::writeComponent);
+    public void writeChatTypeBoundNetwork(ChatType.Bound chatFormatting) {
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21)) {
+            this.writeMappedEntityOrDirect(chatFormatting.getType(), ChatType::writeDirect);
+        } else {
+            this.writeMappedEntity(chatFormatting.getType());
+        }
+        writeComponent(chatFormatting.getName());
+        writeOptional(chatFormatting.getTargetName(), PacketWrapper::writeComponent);
     }
 
     public Node readNode() {
         byte flags = readByte();
         int nodeType = flags & 0x03; // 0: root, 1: literal, 2: argument
-        boolean hasRedirect = (flags & 0x08) != 0;
-        boolean hasSuggestionsType = nodeType == 2 && ((flags & 0x10) != 0);
 
         List<Integer> children = readList(PacketWrapper::readVarInt);
 
-        Integer redirectNodeIndex = hasRedirect ? readVarInt() : null;
-        String name = nodeType == 1 || nodeType == 2 ? readString() : null;
-        Integer parserID = nodeType == 2 ? readVarInt() : null;
-        List<Object> properties = nodeType == 2 ? Parsers.getParsers().get(parserID).readProperties(this).orElse(null) : null;
-        ResourceLocation suggestionType = hasSuggestionsType ? readIdentifier() : null;
-
-        return new Node(flags, children, redirectNodeIndex, name, parserID, properties, suggestionType);
+        int redirectNodeIndex = ((flags & 0x08) != 0) ? readVarInt() : 0;
+        if (nodeType == 2) {
+            String name = this.readString();
+            Parser parser = this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)
+                    ? this.readMappedEntity(Parsers::getById)
+                    : Parsers.getByName(this.readIdentifier().toString());
+            List<Object> properties = parser.readProperties(this).orElse(null);
+            ResourceLocation suggestionType = ((flags & 0x10) != 0) ? this.readIdentifier() : null;
+            return new Node(flags, children, redirectNodeIndex, name, parser, properties, suggestionType);
+        } else if (nodeType == 1) {
+            String name = this.readString();
+            return new Node(flags, children, redirectNodeIndex, name, (Parser) null, null, null);
+        } else {
+            return new Node(flags, children, redirectNodeIndex, null, (Parser) null, null, null);
+        }
     }
 
     public void writeNode(Node node) {
         writeByte(node.getFlags());
         writeList(node.getChildren(), PacketWrapper::writeVarInt);
-        node.getRedirectNodeIndex().ifPresent(this::writeVarInt);
+        if ((node.getFlags() & 0x08) != 0) {
+            writeVarInt(node.getRedirectNodeIndex());
+        }
         node.getName().ifPresent(this::writeString);
-        node.getParserID().ifPresent(this::writeVarInt);
-        if (node.getProperties().isPresent())
-            Parsers.getParsers().get(node.getParserID().get()).writeProperties(this, node.getProperties().get());
+        if (node.getParser().isPresent()) {
+            Parser parser = node.getParser().get();
+            if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)) {
+                this.writeMappedEntity(parser);
+            } else {
+                this.writeIdentifier(parser.getName());
+            }
+            if (node.getProperties().isPresent()) {
+                parser.writeProperties(this, node.getProperties().get());
+            }
+        }
         node.getSuggestionsType().ifPresent(this::writeIdentifier);
+    }
+
+    public KnownPack readKnownPack() {
+        String namespace = this.readString();
+        String id = this.readString();
+        String version = this.readString();
+        return new KnownPack(namespace, id, version);
+    }
+
+    public void writeKnownPack(KnownPack knownPack) {
+        this.writeString(knownPack.getNamespace());
+        this.writeString(knownPack.getId());
+        this.writeString(knownPack.getVersion());
     }
 
     public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> enumClazz) {
@@ -1185,11 +1421,11 @@ public class PacketWrapper<T extends PacketWrapper> {
         }
     }
 
-    public <R> R readOptional(Reader<R> reader) {
+    public <R> @Nullable R readOptional(Reader<R> reader) {
         return this.readBoolean() ? reader.apply(this) : null;
     }
 
-    public <V> void writeOptional(V value, Writer<V> writer) {
+    public <V> void writeOptional(@Nullable V value, Writer<V> writer) {
         if (value != null) {
             this.writeBoolean(true);
             writer.accept(this, value);
@@ -1224,6 +1460,124 @@ public class PacketWrapper<T extends PacketWrapper> {
         for (K key : list) {
             writer.accept(this, key);
         }
+    }
+
+    @SuppressWarnings("unchecked") // not unchecked
+    public <K> K[] readArray(Reader<K> reader, Class<K> clazz) {
+        int length = this.readVarInt();
+        K[] array = (K[]) Array.newInstance(clazz, length);
+        for (int i = 0; i < length; i++) {
+            array[i] = reader.apply(this);
+        }
+        return array;
+    }
+
+    public <K> void writeArray(K[] array, Writer<K> writer) {
+        this.writeVarInt(array.length);
+        for (K element : array) {
+            writer.accept(this, element);
+        }
+    }
+
+    public <Z extends Enum<?>> Z readEnum(Class<Z> clazz) {
+        return this.readEnum(clazz.getEnumConstants());
+    }
+
+    public <Z extends Enum<?>> Z readEnum(Z[] values) {
+        return values[this.readVarInt()];
+    }
+
+    public void writeEnum(Enum<?> value) {
+        this.writeVarInt(value.ordinal());
+    }
+
+    public <Z extends MappedEntity> Z readMappedEntity(BiFunction<ClientVersion, Integer, Z> getter) {
+        int id = this.readVarInt();
+        Z entity = getter.apply(this.serverVersion.toClientVersion(), id);
+        if (entity == null) {
+            throw new IllegalStateException("Can't find mapped entity with id " + id + " using " + getter);
+        }
+        return entity;
+    }
+
+    public IRegistryHolder getRegistryHolder() {
+        // workaround to make packet wrappers work without user context on spigot/fabric servers
+        // this will not work for bungee or velocity, as we need to have some reference to get
+        // the actual cache key
+        return this.user != null ? this.user : GlobalRegistryHolder.INSTANCE;
+    }
+
+    public <Z extends MappedEntity> Z readMappedEntityOrDirect(
+            BiFunction<ClientVersion, Integer, Z> getter, Reader<Z> directReader) {
+        int id = this.readVarInt();
+        if (id == 0) { // not registered in registry
+            return directReader.apply(this);
+        }
+        Z entity = getter.apply(this.serverVersion.toClientVersion(), id - 1);
+        if (entity == null) {
+            throw new IllegalStateException("Can't find mapped entity with id " + id + " using " + getter);
+        }
+        return entity;
+    }
+
+    public <Z extends MappedEntity> Z readMappedEntity(IRegistry<Z> registry) {
+        IRegistry<Z> replacedRegistry = this.getRegistryHolder().getRegistryOr(registry);
+        return this.readMappedEntity((BiFunction<ClientVersion, Integer, Z>) replacedRegistry);
+    }
+
+    public <Z extends MappedEntity> Z readMappedEntityOrDirect(IRegistry<Z> registry, Reader<Z> directReader) {
+        IRegistry<Z> replacedRegistry = this.getRegistryHolder().getRegistryOr(registry);
+        return this.readMappedEntityOrDirect((BiFunction<ClientVersion, Integer, Z>) replacedRegistry, directReader);
+    }
+
+    public void writeMappedEntity(MappedEntity entity) {
+        if (!entity.isRegistered()) {
+            throw new IllegalArgumentException("Can't write id of unregistered entity "
+                    + entity.getName() + " (" + entity + ")");
+        }
+        this.writeVarInt(entity.getId(this.serverVersion.toClientVersion()));
+    }
+
+    public <Z extends MappedEntity> void writeMappedEntityOrDirect(Z entity, Writer<Z> writer) {
+        if (!entity.isRegistered()) {
+            this.writeVarInt(0);
+            writer.accept(this, entity);
+            return;
+        }
+        int id = entity.getId(this.serverVersion.toClientVersion());
+        this.writeVarInt(id + 1);
+    }
+
+    public int readContainerId() {
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_2)) {
+            return this.readVarInt();
+        }
+        return this.readUnsignedByte();
+    }
+
+    public void writeContainerId(int containerId) {
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_2)) {
+            this.writeVarInt(containerId);
+        } else {
+            this.writeByte(containerId);
+        }
+    }
+
+    public void writeRotation(float rotation) {
+        this.writeByte((byte) MathUtil.floor(rotation * 256f / 360f));
+    }
+
+    public float readRotation() {
+        return (float) (this.readByte() * 360) / 256f;
+    }
+
+    public @Nullable Integer readNullableVarInt() {
+        int i = this.readVarInt();
+        return i == 0 ? null : i - 1;
+    }
+
+    public void writeNullableVarInt(@Nullable Integer i) {
+        this.writeVarInt(i == null ? 0 : i + 1);
     }
 
     @FunctionalInterface

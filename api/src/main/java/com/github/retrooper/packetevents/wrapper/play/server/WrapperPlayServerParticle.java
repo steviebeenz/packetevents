@@ -35,19 +35,32 @@ import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 //TODO: Check changelog through out the versions
 public class WrapperPlayServerParticle extends PacketWrapper<WrapperPlayServerParticle> {
 
-    private Particle particle;
+    private Particle<?> particle;
     private boolean longDistance;
     private Vector3d position;
     private Vector3f offset;
     private float maxSpeed;
     private int particleCount;
+    /**
+     * Added with 1.21.4
+     */
+    private boolean alwaysShow;
 
     public WrapperPlayServerParticle(PacketSendEvent event) {
         super(event);
     }
 
-    public WrapperPlayServerParticle(Particle particle, boolean longDistance, Vector3d position, Vector3f offset,
-                                     float maxSpeed, int particleCount) {
+    public WrapperPlayServerParticle(
+            Particle<?> particle, boolean longDistance, Vector3d position, Vector3f offset,
+            float maxSpeed, int particleCount
+    ) {
+        this(particle, longDistance, position, offset, maxSpeed, particleCount, false);
+    }
+
+    public WrapperPlayServerParticle(
+            Particle<?> particle, boolean longDistance, Vector3d position, Vector3f offset,
+            float maxSpeed, int particleCount, boolean alwaysShow
+    ) {
         super(PacketType.Play.Server.PARTICLE);
         this.particle = particle;
         this.longDistance = longDistance;
@@ -55,20 +68,26 @@ public class WrapperPlayServerParticle extends PacketWrapper<WrapperPlayServerPa
         this.offset = offset;
         this.maxSpeed = maxSpeed;
         this.particleCount = particleCount;
+        this.alwaysShow = alwaysShow;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void read() {
         int particleTypeId = 0;
-        ParticleType particleType;
+        ParticleType<?> particleType = null;
+        boolean v1205 = this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20_5);
         if (serverVersion == ServerVersion.V_1_7_10) {
             String particleName = readString(64);
             particleType = ParticleTypes.getByName("minecraft:" + particleName);
-        } else {
+        } else if (!v1205) {
             particleTypeId = serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19) ? readVarInt() : readInt();
             particleType = ParticleTypes.getById(serverVersion.toClientVersion(), particleTypeId);
         }
         longDistance = readBoolean();
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_4)) {
+            this.alwaysShow = this.readBoolean();
+        }
         if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_15)) {
             position = new Vector3d(readDouble(), readDouble(), readDouble());
         } else {
@@ -77,26 +96,32 @@ public class WrapperPlayServerParticle extends PacketWrapper<WrapperPlayServerPa
         offset = new Vector3f(readFloat(), readFloat(), readFloat());
         maxSpeed = readFloat();
         particleCount = readInt();
-        ParticleData data;
-        if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_13)) {
-            data = particleType.readDataFunction().apply(this);
+
+        if (v1205) {
+            this.particle = Particle.read(this);
         } else {
-            data = new ParticleData();
-            if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_8)) {
-                //TODO Understand the legacy data: https://wiki.vg/index.php?title=Protocol&oldid=14204
-                data = LegacyParticleData.read(this, particleTypeId);
+            ParticleData data;
+            if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_13)) {
+                data = particleType.readData(this);
+            } else {
+                data = ParticleData.emptyData();
+                if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_8)) {
+                    //TODO Understand the legacy data: https://wiki.vg/index.php?title=Protocol&oldid=14204
+                    data = LegacyParticleData.read(this, particleTypeId);
+                }
             }
+            this.particle = new Particle<>((ParticleType<ParticleData>) particleType, data);
         }
-        particle = new Particle(particleType, data);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void write() {
-        int id = particle.getType().getId(serverVersion.toClientVersion());
         //TODO on 1.7 we get particle type by 64 len string
         if (serverVersion == ServerVersion.V_1_7_10) {
             writeString(particle.getType().getName().getKey(), 64);
-        } else {
+        } else if (this.serverVersion.isOlderThan(ServerVersion.V_1_20_5)) {
+            int id = this.particle.getType().getId(this.serverVersion.toClientVersion());
             if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)) {
                 writeVarInt(id);
             } else {
@@ -104,6 +129,9 @@ public class WrapperPlayServerParticle extends PacketWrapper<WrapperPlayServerPa
             }
         }
         writeBoolean(longDistance);
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_4)) {
+            this.writeBoolean(this.alwaysShow);
+        }
         if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_15)) {
             writeDouble(position.getX());
             writeDouble(position.getY());
@@ -118,34 +146,36 @@ public class WrapperPlayServerParticle extends PacketWrapper<WrapperPlayServerPa
         writeFloat(offset.getZ());
         writeFloat(maxSpeed);
         writeInt(particleCount);
-        if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_13)) {
-            particle.getType().writeDataFunction().accept(this, particle.getData());
-        } else if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_8)) {
-            LegacyParticleData legacyData;
-            if (particle.getData() instanceof LegacyConvertible) {
-                legacyData = ((LegacyConvertible) particle.getData()).toLegacy(serverVersion.toClientVersion());
-            } else {
-                legacyData = LegacyParticleData.nullValue(id);
-            }
+
+        if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20_5)) {
+            Particle.write(this, this.particle);
+        } else if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_13)) {
+            ((ParticleType<ParticleData>) this.particle.getType()).writeData(this, this.particle.getData());
+        } else if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_8)) {
+            int id = this.particle.getType().getId(this.serverVersion.toClientVersion());
+            LegacyParticleData legacyData = this.particle.getData() instanceof LegacyConvertible
+                    ? ((LegacyConvertible) this.particle.getData()).toLegacy(this.serverVersion.toClientVersion())
+                    : LegacyParticleData.nullValue(id);
             LegacyParticleData.write(this, id, legacyData);
         }
     }
 
     @Override
     public void copy(WrapperPlayServerParticle wrapper) {
-        particle = wrapper.particle;
-        longDistance = wrapper.longDistance;
-        position = wrapper.position;
-        offset = wrapper.offset;
-        maxSpeed = wrapper.maxSpeed;
-        particleCount = wrapper.particleCount;
+        this.particle = wrapper.particle;
+        this.longDistance = wrapper.longDistance;
+        this.position = wrapper.position;
+        this.offset = wrapper.offset;
+        this.maxSpeed = wrapper.maxSpeed;
+        this.particleCount = wrapper.particleCount;
+        this.alwaysShow = wrapper.alwaysShow;
     }
 
-    public Particle getParticle() {
+    public Particle<?> getParticle() {
         return particle;
     }
 
-    public void setParticle(Particle particle) {
+    public void setParticle(Particle<?> particle) {
         this.particle = particle;
     }
 
@@ -189,4 +219,17 @@ public class WrapperPlayServerParticle extends PacketWrapper<WrapperPlayServerPa
         this.particleCount = particleCount;
     }
 
+    /**
+     * Added with 1.21.4
+     */
+    public boolean isAlwaysShow() {
+        return this.alwaysShow;
+    }
+
+    /**
+     * Added with 1.21.4
+     */
+    public void setAlwaysShow(boolean alwaysShow) {
+        this.alwaysShow = alwaysShow;
+    }
 }

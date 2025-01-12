@@ -26,19 +26,17 @@ import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.manager.protocol.ProtocolManager;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
-import com.github.retrooper.packetevents.protocol.nbt.NBTCompound;
-import com.github.retrooper.packetevents.protocol.nbt.NBTList;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.player.UserProfile;
+import com.github.retrooper.packetevents.util.LogManager;
+import com.github.retrooper.packetevents.util.mappings.SynchronizedRegistriesHandler;
 import com.github.retrooper.packetevents.wrapper.configuration.server.WrapperConfigServerRegistryData;
 import com.github.retrooper.packetevents.wrapper.handshaking.client.WrapperHandshakingClientHandshake;
 import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerLoginSuccess;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerJoinGame;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerRespawn;
-
-import java.net.InetSocketAddress;
 
 public class InternalPacketListener extends PacketListenerAbstract {
 
@@ -83,61 +81,37 @@ public class InternalPacketListener extends PacketListenerAbstract {
             }
         }
 
-        // The server sends dimension information in configuration phase >= 1.20.2
+        // The server sends dimension information in configuration phase, since 1.20.2
         else if (event.getPacketType() == PacketType.Configuration.Server.REGISTRY_DATA) {
-            WrapperConfigServerRegistryData registryData = new WrapperConfigServerRegistryData(event);
+            WrapperConfigServerRegistryData packet = new WrapperConfigServerRegistryData(event);
 
-            // Store world data
-            NBTCompound registryDataTag = registryData.getRegistryData();
-            if (registryDataTag != null) {
-                NBTList<NBTCompound> list = registryDataTag
-                        .getCompoundTagOrNull("minecraft:dimension_type")
-                        .getCompoundListTagOrNull("value");
-                user.setWorldNBT(list);
+            if (packet.getElements() != null) { // 1.20.2 to 1.20.5
+                SynchronizedRegistriesHandler.handleRegistry(user, packet.getServerVersion().toClientVersion(),
+                        packet.getRegistryKey(), packet.getElements());
+            }
+            if (packet.getRegistryData() != null) { // since 1.20.5
+                SynchronizedRegistriesHandler.handleLegacyRegistries(user, packet.getServerVersion()
+                        .toClientVersion(), packet.getRegistryData());
             }
         }
 
-        // The server sends dimension information in login packet for >= 1.17 and < 1.20.2
+        // The server sends registry info in login packet for 1.16 to 1.20.1
         else if (event.getPacketType() == PacketType.Play.Server.JOIN_GAME) {
             WrapperPlayServerJoinGame joinGame = new WrapperPlayServerJoinGame(event);
             user.setEntityId(joinGame.getEntityId());
-            user.setDimension(joinGame.getDimension());
-            if (event.getServerVersion().isOlderThanOrEquals(ServerVersion.V_1_16_5)) {
-                return; // Fixed world height, no tags are sent to the client
+
+            if (joinGame.getDimensionCodec() != null) { // 1.16 to 1.20.1
+                SynchronizedRegistriesHandler.handleLegacyRegistries(user, joinGame.getServerVersion().toClientVersion(),
+                        joinGame.getDimensionCodec());
             }
 
-            // Store world data
-            NBTCompound dimensionCodec = joinGame.getDimensionCodec();
-            if (dimensionCodec != null) {
-                NBTList<NBTCompound> list = dimensionCodec
-                        .getCompoundTagOrNull("minecraft:dimension_type")
-                        .getCompoundListTagOrNull("value");
-                user.setWorldNBT(list);
-            }
-
-            // Update world height
-            NBTCompound dimension = user.getWorldNBT(joinGame.getDimension().getDimensionName());
-            if (dimension != null) {
-                NBTCompound worldNBT = dimension.getCompoundTagOrNull("element");
-                user.setMinWorldHeight(worldNBT.getNumberTagOrNull("min_y").getAsInt());
-                user.setTotalWorldHeight(worldNBT.getNumberTagOrNull("height").getAsInt());
-            }
+            user.setDimensionType(joinGame.getDimensionType());
         }
 
         // Respawn is used to switch dimensions
         else if (event.getPacketType() == PacketType.Play.Server.RESPAWN) {
-            WrapperPlayServerRespawn respawn = new WrapperPlayServerRespawn(event);
-            user.setDimension(respawn.getDimension());
-            if (event.getServerVersion().isOlderThanOrEquals(ServerVersion.V_1_16_5)) {
-                return; // Fixed world height, no tags are sent to the client
-            }
-
-            NBTCompound dimension = user.getWorldNBT(respawn.getDimension().getDimensionName());
-            if (dimension != null) {
-                NBTCompound worldNBT = dimension.getCompoundTagOrNull("element"); // This is 1.17+, it always sends the world name
-                user.setMinWorldHeight(worldNBT.getNumberTagOrNull("min_y").getAsInt());
-                user.setTotalWorldHeight(worldNBT.getNumberTagOrNull("height").getAsInt());
-            }
+            WrapperPlayServerRespawn packet = new WrapperPlayServerRespawn(event);
+            user.setDimensionType(packet.getDimensionType());
         } else if (event.getPacketType() == PacketType.Play.Server.CONFIGURATION_START) {
             user.setEncoderState(ConnectionState.CONFIGURATION);
         } else if (event.getPacketType() == PacketType.Configuration.Server.CONFIGURATION_END) {
@@ -149,16 +123,18 @@ public class InternalPacketListener extends PacketListenerAbstract {
     public void onPacketReceive(PacketReceiveEvent event) {
         User user = event.getUser();
         if (event.getPacketType() == PacketType.Handshaking.Client.HANDSHAKE) {
-            Object channel = event.getChannel();
-            InetSocketAddress address = event.getSocketAddress();
-            WrapperHandshakingClientHandshake handshake = new WrapperHandshakingClientHandshake(event);
-            ConnectionState nextState = handshake.getNextConnectionState();
-            ClientVersion clientVersion = handshake.getClientVersion();
-            //Update client version for this event call(and user)
+            WrapperHandshakingClientHandshake packet = new WrapperHandshakingClientHandshake(event);
+            ClientVersion clientVersion = packet.getClientVersion();
+            ConnectionState state = packet.getNextConnectionState();
+
+            LogManager logger = PacketEvents.getAPI().getLogManager();
+            if (logger.isDebug()) {
+                logger.debug("Processed handshake for " + event.getAddress() + ": "
+                        + state.name() + " / " + packet.getClientVersion().getReleaseName());
+            }
+
             user.setClientVersion(clientVersion);
-            PacketEvents.getAPI().getLogManager().debug("Processed " + address.getHostString() + ":" + address.getPort() + "'s client version. Client Version: " + clientVersion.getReleaseName());
-            //Transition into LOGIN or STATUS connection state immediately, to remain in sync with vanilla
-            user.setConnectionState(nextState);
+            user.setConnectionState(state);
         } else if (event.getPacketType() == PacketType.Login.Client.LOGIN_SUCCESS_ACK) {
             user.setDecoderState(ConnectionState.CONFIGURATION);
         } else if (event.getPacketType() == PacketType.Play.Client.CONFIGURATION_ACK) {

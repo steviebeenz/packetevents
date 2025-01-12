@@ -33,24 +33,38 @@ import java.util.Optional;
 public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<WrapperPlayClientPlayerBlockPlacement> {
     private InteractionHand interactionHand;
     private Vector3i blockPosition;
+    private int faceId;
     private BlockFace face;
     private Vector3f cursorPosition;
     private Optional<ItemStack> itemStack;
     private Optional<Boolean> insideBlock;
-    int sequence;
+    private Optional<Boolean> worldBorderHit;
+    private int sequence;
 
     public WrapperPlayClientPlayerBlockPlacement(PacketReceiveEvent event) {
         super(event);
     }
 
-    public WrapperPlayClientPlayerBlockPlacement(InteractionHand interactionHand, Vector3i blockPosition, BlockFace face, Vector3f cursorPosition, ItemStack itemStack, Boolean insideBlock, int sequence) {
+    public WrapperPlayClientPlayerBlockPlacement(
+            InteractionHand interactionHand, Vector3i blockPosition, BlockFace face, Vector3f cursorPosition,
+            ItemStack itemStack, Boolean insideBlock, int sequence
+    ) {
+        this(interactionHand, blockPosition, face, cursorPosition, itemStack, insideBlock, null, sequence);
+    }
+
+    public WrapperPlayClientPlayerBlockPlacement(
+            InteractionHand interactionHand, Vector3i blockPosition, BlockFace face, Vector3f cursorPosition,
+            ItemStack itemStack, Boolean insideBlock, Boolean worldBorderHit, int sequence
+    ) {
         super(PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT);
         this.interactionHand = interactionHand;
         this.blockPosition = blockPosition;
         this.face = face;
+        this.faceId = face.getFaceValue();
         this.cursorPosition = cursorPosition;
         this.itemStack = Optional.ofNullable(itemStack);
         this.insideBlock = Optional.ofNullable(insideBlock);
+        this.worldBorderHit = Optional.ofNullable(worldBorderHit);
         this.sequence = sequence;
     }
 
@@ -61,10 +75,14 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
         if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_14)) {
             interactionHand = InteractionHand.getById(readVarInt());
             blockPosition = readBlockPosition();
-            face = BlockFace.getBlockFaceByValue(readVarInt());
+            faceId = readVarInt();
+            face = BlockFace.getBlockFaceByValue(faceId);
             cursorPosition = new Vector3f(readFloat(), readFloat(), readFloat());
             insideBlock = Optional.of(readBoolean());
             if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)) {
+                if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_2)) {
+                    this.worldBorderHit = Optional.of(this.readBoolean());
+                }
                 sequence = readVarInt();
             }
         } else {
@@ -74,10 +92,12 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
                 blockPosition = readBlockPosition();
             }
             if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_9)) {
-                face = BlockFace.getBlockFaceByValue(readVarInt());
+                faceId = readVarInt();
+                face = BlockFace.getBlockFaceByValue(faceId);
                 interactionHand = InteractionHand.getById(readVarInt());
             } else {
-                face = BlockFace.getLegacyBlockFaceByValue(readUnsignedByte());
+                faceId = readUnsignedByte();
+                face = BlockFace.getLegacyBlockFaceByValue(faceId);
                 //Optional itemstack
                 itemStack = Optional.of(readItemStack());
                 interactionHand = InteractionHand.MAIN_HAND;
@@ -95,12 +115,15 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
         if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_14)) {
             writeVarInt(interactionHand.getId());
             writeBlockPosition(blockPosition);
-            writeVarInt(face.getFaceValue());
+            writeVarInt(faceId);
             writeFloat(cursorPosition.x);
             writeFloat(cursorPosition.y);
             writeFloat(cursorPosition.z);
             writeBoolean(insideBlock.orElse(false));
             if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_19)) {
+                if (this.serverVersion.isNewerThanOrEquals(ServerVersion.V_1_21_2)) {
+                    this.writeBoolean(this.worldBorderHit.orElse(false));
+                }
                 writeVarInt(sequence);
             }
         } else {
@@ -112,10 +135,10 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
                 writeBlockPosition(blockPosition);
             }
             if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_9)) {
-                writeVarInt(face.getFaceValue());
+                writeVarInt(faceId);
                 writeVarInt(interactionHand.getId());
             } else {
-                writeByte(face.getFaceValue());
+                writeByte(faceId);
                 writeItemStack(itemStack.orElse(ItemStack.EMPTY));
                 //Hand is always the main hand
             }
@@ -136,9 +159,11 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
         interactionHand = wrapper.interactionHand;
         blockPosition = wrapper.blockPosition;
         face = wrapper.face;
+        faceId = wrapper.faceId;
         cursorPosition = wrapper.cursorPosition;
         itemStack = wrapper.itemStack;
         insideBlock = wrapper.insideBlock;
+        worldBorderHit = wrapper.worldBorderHit;
         sequence = wrapper.sequence;
     }
 
@@ -158,12 +183,24 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
         this.blockPosition = blockPosition;
     }
 
+    public int getFaceId() {
+        return faceId;
+    }
+
+    public void setFaceId(int faceId) {
+        this.faceId = faceId;
+        this.face = serverVersion.isNewerThanOrEquals(ServerVersion.V_1_9)
+                ? BlockFace.getBlockFaceByValue(faceId)
+                : BlockFace.getLegacyBlockFaceByValue(faceId);
+    }
+
     public BlockFace getFace() {
         return face;
     }
 
     public void setFace(BlockFace face) {
         this.face = face;
+        this.faceId = face.getFaceValue();
     }
 
     public Vector3f getCursorPosition() {
@@ -183,11 +220,19 @@ public class WrapperPlayClientPlayerBlockPlacement extends PacketWrapper<Wrapper
     }
 
     public Optional<Boolean> getInsideBlock() {
-        return insideBlock;
+        return this.insideBlock != null ? this.insideBlock : Optional.empty();
     }
 
     public void setInsideBlock(Optional<Boolean> insideBlock) {
         this.insideBlock = insideBlock;
+    }
+
+    public Optional<Boolean> getWorldBorderHit() {
+        return this.worldBorderHit != null ? this.worldBorderHit : Optional.empty();
+    }
+
+    public void setWorldBorderHit(Optional<Boolean> worldBorderHit) {
+        this.worldBorderHit = worldBorderHit;
     }
 
     public int getSequence() {

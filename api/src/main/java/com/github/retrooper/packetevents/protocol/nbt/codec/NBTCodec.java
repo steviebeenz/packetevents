@@ -33,12 +33,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class NBTCodec {
+
     //PacketEvents start: JSON -> NBT conversion method
+    @Deprecated
     public static NBT jsonToNBT(JsonElement element) {
         //Deal with the primitives first
         if (element instanceof JsonPrimitive) {
@@ -102,6 +103,7 @@ public class NBTCodec {
     //PacketEvents end
 
     //PacketEvents start - NBT to JSON conversion
+    @Deprecated
     public static JsonElement nbtToJson(NBT nbt, boolean parseByteAsBool) {
         //TODO once I make my own nbt implementation, make a toJSON method that each nbt class implements to make this  a one liner
         if (nbt instanceof NBTNumber) {
@@ -147,16 +149,17 @@ public class NBTCodec {
     }
     //PacketEvents end
 
-    public static NBTCompound readNBTFromBuffer(Object byteBuf, ServerVersion serverVersion) {
-        return (NBTCompound) readRawNBTFromBuffer(byteBuf, serverVersion);
+    public static NBT readNBTFromBuffer(Object byteBuf, ServerVersion serverVersion) {
+        NBTLimiter limiter = NBTLimiter.forBuffer(byteBuf);
+        return readNBTFromBuffer(byteBuf, serverVersion, limiter);
     }
 
-    public static NBT readRawNBTFromBuffer(Object byteBuf, ServerVersion serverVersion) {
+    public static NBT readNBTFromBuffer(Object byteBuf, ServerVersion serverVersion, NBTLimiter limiter) {
         if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_8)) {
             try {
                 final boolean named = serverVersion.isOlderThan(ServerVersion.V_1_20_2);
                 return DefaultNBTSerializer.INSTANCE.deserializeTag(
-                        new ByteBufInputStream(byteBuf), named);
+                        limiter, new ByteBufInputStream(byteBuf), named);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -170,7 +173,7 @@ public class NBTCodec {
                 Object slicedBuffer = ByteBufHelper.readSlice(byteBuf, length);
                 try (DataInputStream stream = new DataInputStream(
                         new GZIPInputStream(new ByteBufInputStream(slicedBuffer)))) {
-                    return DefaultNBTSerializer.INSTANCE.deserializeTag(stream);
+                    return DefaultNBTSerializer.INSTANCE.deserializeTag(limiter, stream);
                 }
             }
             catch (IOException ex) {
